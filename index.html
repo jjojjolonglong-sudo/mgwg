@@ -4,6 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MGWG - 마구와구 먹은 기록</title>
+    <!-- 앱 설치(PWA) 설정 -->
+    <link rel="manifest" href="manifest.webmanifest">
+    <meta name="theme-color" content="#ffffff">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="MGWG">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="icon-192.png">
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts Inter -->
@@ -58,7 +67,7 @@
             <div class="flex items-center justify-between mb-6 max-w-4xl mx-auto">
                 <div>
                     <h1 class="text-lg font-bold text-neutral-900">마구와구 먹은 기록</h1>
-                    <p class="text-xs text-neutral-500 mt-0.5" id="itemCountSubtitle">0 posts</p>
+                    <p class="text-xs text-neutral-500 mt-0.5" id="itemCountSubtitle">0 items</p>
                 </div>
                 <button onclick="openAddPanel('ITEM')" class="px-3.5 py-2 rounded-xl bg-pink-600 hover:bg-pink-700 text-white text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-all active:scale-95">
                     <i class="fa-solid fa-plus text-xs"></i> ITEM 추가
@@ -86,7 +95,7 @@
         <div id="viewSort" class="tab-view hidden">
             <div class="flex items-center justify-between mb-6 max-w-4xl mx-auto">
                 <div>
-                    <h1 class="text-lg font-bold text-neutral-900">SORT 분류 관리</h1>
+                    <h1 class="text-lg font-bold text-neutral-900">마구와구 먹은 메뉴</h1>
                     <p class="text-xs text-neutral-500 mt-0.5" id="sortCountSubtitle">0 sorts</p>
                 </div>
                 <button onclick="openAddPanel('SORT')" class="px-3.5 py-2 rounded-xl bg-neutral-900 hover:bg-neutral-800 text-white text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-all">
@@ -115,7 +124,7 @@
         <div id="viewStore" class="tab-view hidden">
             <div class="flex items-center justify-between mb-6 max-w-4xl mx-auto">
                 <div>
-                    <h1 class="text-lg font-bold text-neutral-900">STORE 가맹점 관리</h1>
+                    <h1 class="text-lg font-bold text-neutral-900">마구와구 먹은 가게</h1>
                     <p class="text-xs text-neutral-500 mt-0.5" id="storeCountSubtitle">0 stores</p>
                 </div>
                 <button onclick="openAddPanel('STORE')" class="px-3.5 py-2 rounded-xl bg-neutral-900 hover:bg-neutral-800 text-white text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-all">
@@ -236,6 +245,11 @@
 
         window.onload = loadAllData;
 
+        // 앱 설치용 서비스워커 등록 (https 환경에서만 동작, 실패해도 앱 사용에는 영향 없음)
+        if ('serviceWorker' in navigator && location.protocol === 'https:') {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+
         function sortStoresByRecentItem() {
             stores.sort((a, b) => {
                 const aItems = items.filter(r => r.storeId === a.id);
@@ -313,7 +327,7 @@
 
         // ==================== ITEM LOGIC ====================
         function renderItems() {
-            document.getElementById('itemCountSubtitle').innerText = `${items.length} posts`;
+            document.getElementById('itemCountSubtitle').innerText = `${items.length} items`;
             const grid = document.getElementById('itemGrid');
             const emptyState = document.getElementById('itemEmptyState');
             grid.innerHTML = '';
@@ -335,7 +349,7 @@
 
                 itemEl.innerHTML = `
                     <img src="${esc(imgSrc(item.photo, 'MGWG'))}" alt="${esc(item.name)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onerror="this.src='https://placehold.co/400x400/f3f4f6/a3a3a3?text=MGWG'">
-                    <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent pt-6 pb-2.5 px-3 flex flex-col items-end text-right">
+                    <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent pt-6 pb-2.5 px-3 flex flex-col items-center text-center">
                         <span class="inline-block text-[11px] font-bold mb-0.5 truncate max-w-[90%] drop-shadow-sm" style="color: ${storeColor};">${esc(storeName)}</span>
                         <p class="text-sm font-bold text-white truncate max-w-full leading-tight">${esc(item.name)}</p>
                     </div>
@@ -921,7 +935,7 @@
                             <div class="space-y-2 max-h-48 overflow-y-auto p-2 bg-neutral-50 rounded-2xl border border-neutral-200">
                                 <div class="grid grid-cols-3 gap-2" id="itemPhotoSelectorGrid">
                                     <div onclick="selectSortPhotoFromItem('')" class="aspect-square bg-neutral-200 rounded-xl flex items-center justify-center text-[11px] text-neutral-500 cursor-pointer font-medium">선택 안함</div>
-                                    ${items.map(r => `
+                                    ${items.filter(r => r.photo && r.sortIds.includes(sortObj.id)).map(r => `
                                         <div onclick="selectSortPhotoFromItem(this.dataset.photo)" class="aspect-square rounded-xl overflow-hidden cursor-pointer border-2 ${sortObj.photo === r.photo ? 'border-pink-600 border-4' : 'border-transparent'} hover:border-pink-500 relative sort-photo-option" data-photo="${esc(r.photo)}">
                                             <img src="${esc(imgSrc(r.photo, 'MGWG'))}" class="w-full h-full object-cover">
                                         </div>
