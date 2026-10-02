@@ -208,7 +208,7 @@
         function syncData() {
             syncQueue = syncQueue.then(doSync).catch(err => {
                 console.error("데이터 동기화 실패:", err);
-                alert("스프레드시트 저장에 실패했습니다. 잠시 후 다시 시도해주세요.");
+                alert("스프레드시트 저장에 실패했습니다.\n사진/내용이 서버에 저장되지 않았을 수 있습니다.\n\n[원인] " + (err && err.message ? err.message : err));
             });
             return syncQueue;
         }
@@ -305,6 +305,7 @@
                     if (preview) { preview.src = uploadedBase64Image; preview.classList.remove('hidden'); }
                     if (placeholder) { placeholder.classList.add('hidden'); }
                 };
+                img.onerror = () => alert('이 이미지 형식은 읽을 수 없습니다. JPG/PNG 사진으로 다시 시도해주세요.');
                 img.src = e.target.result;
             };
             reader.readAsDataURL(file);
