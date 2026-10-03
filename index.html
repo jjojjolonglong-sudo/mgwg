@@ -20,6 +20,9 @@
     <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        html, body {
+            overscroll-behavior-y: none; /* 오버스크롤 텐션 제거 */
+        }
         body {
             font-family: 'Inter', sans-serif;
             background-color: #fafafa;
@@ -79,8 +82,8 @@
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start justify-center">
                 <div class="order-2 lg:order-1 w-full max-w-[600px] mx-auto">
                     <div id="itemGrid" class="grid grid-cols-3 sm:grid-cols-4 gap-1.5"></div>
-                    <div id="itemEmptyState" class="hidden flex flex-col items-center justify-center py-20 text-center bg-white rounded-2xl border border-neutral-200">
-                        <div class="w-16 h-16 bg-neutral-100 rounded-2xl flex items-center justify-center text-neutral-400 mb-3 text-xl">
+                    <div id="itemEmptyState" class="hidden flex flex-col items-center justify-center py-20 text-center bg-white rounded-xl border border-neutral-200">
+                        <div class="w-16 h-16 bg-neutral-100 rounded-xl flex items-center justify-center text-neutral-400 mb-3 text-xl">
                             <i class="fa-solid fa-utensils"></i>
                         </div>
                         <h3 class="text-sm font-semibold text-neutral-800">아직 등록된 기록이 없습니다</h3>
@@ -88,7 +91,7 @@
                     </div>
                 </div>
                 <div class="order-1 lg:order-2 w-full max-w-[600px] mx-auto">
-                    <div id="itemSidePanel" class="hidden fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4 lg:static lg:inset-auto lg:bg-transparent lg:flex-none lg:p-0"></div>
+                    <div id="itemSidePanel" class="hidden w-full max-w-[600px] mx-auto mb-6"></div>
                 </div>
             </div>
         </div>
@@ -110,8 +113,8 @@
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start justify-center">
                 <div class="order-2 lg:order-1 w-full max-w-[600px] mx-auto">
                     <div id="sortGrid" class="grid grid-cols-3 sm:grid-cols-4 gap-1.5"></div>
-                    <div id="sortEmptyState" class="hidden flex flex-col items-center justify-center py-20 text-center bg-white rounded-2xl border border-neutral-200">
-                        <div class="w-16 h-16 bg-neutral-100 rounded-2xl flex items-center justify-center text-neutral-400 mb-3 text-xl">
+                    <div id="sortEmptyState" class="hidden flex flex-col items-center justify-center py-20 text-center bg-white rounded-xl border border-neutral-200">
+                        <div class="w-16 h-16 bg-neutral-100 rounded-xl flex items-center justify-center text-neutral-400 mb-3 text-xl">
                             <i class="fa-solid fa-layer-group"></i>
                         </div>
                         <h3 class="text-sm font-semibold text-neutral-800">등록된 SORT가 없습니다</h3>
@@ -119,7 +122,7 @@
                     </div>
                 </div>
                 <div class="order-1 lg:order-2 w-full max-w-[600px] mx-auto">
-                    <div id="sortSidePanel" class="hidden fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4 lg:static lg:inset-auto lg:bg-transparent lg:flex-none lg:p-0"></div>
+                    <div id="sortSidePanel" class="hidden w-full max-w-[600px] mx-auto mb-6"></div>
                 </div>
             </div>
         </div>
@@ -141,8 +144,8 @@
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start justify-center">
                 <div class="order-2 lg:order-1 w-full max-w-[600px] mx-auto">
                     <div id="storeGrid" class="grid grid-cols-3 sm:grid-cols-4 gap-1.5"></div>
-                    <div id="storeEmptyState" class="hidden flex flex-col items-center justify-center py-20 text-center bg-white rounded-2xl border border-neutral-200">
-                        <div class="w-16 h-16 bg-neutral-100 rounded-2xl flex items-center justify-center text-neutral-400 mb-3 text-xl">
+                    <div id="storeEmptyState" class="hidden flex flex-col items-center justify-center py-20 text-center bg-white rounded-xl border border-neutral-200">
+                        <div class="w-16 h-16 bg-neutral-100 rounded-xl flex items-center justify-center text-neutral-400 mb-3 text-xl">
                             <i class="fa-solid fa-store"></i>
                         </div>
                         <h3 class="text-sm font-semibold text-neutral-800">등록된 STORE가 없습니다</h3>
@@ -150,7 +153,7 @@
                     </div>
                 </div>
                 <div class="order-1 lg:order-2 w-full max-w-[600px] mx-auto">
-                    <div id="storeSidePanel" class="hidden fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4 lg:static lg:inset-auto lg:bg-transparent lg:flex-none lg:p-0"></div>
+                    <div id="storeSidePanel" class="hidden w-full max-w-[600px] mx-auto mb-6"></div>
                 </div>
             </div>
         </div>
@@ -296,10 +299,10 @@
             }
         }
 
-        // 패널 상단 고정 헤더: 제목 + 액션 버튼(SAVE/EDIT/DELETE) + 닫기 (상단 여백 줄임)
+        // 패널 상단 고정 헤더: 제목 + 액션 버튼(SAVE/EDIT/DELETE) + 닫기 (상단 여백 최소화)
         function panelHeader(title, actionsHtml) {
             return `
-                <div class="sticky top-0 z-10 bg-white -mx-5 px-5 -mt-3 pt-3 pb-2 mb-3 border-b border-neutral-100 flex items-center justify-between gap-2">
+                <div class="sticky top-0 z-10 bg-white -mx-4 px-4 -mt-4 pt-3 pb-2 mb-2 border-b border-neutral-100 flex items-center justify-between gap-2">
                     <h2 class="text-sm font-bold text-neutral-900 truncate">${title}</h2>
                     <div class="flex items-center gap-1.5 shrink-0">
                         ${actionsHtml || ''}
@@ -308,9 +311,9 @@
                 </div>`;
         }
 
-        // 공통 내부 박스 래퍼 함수 (모서리 둥글기 rounded-2xl 및 컴팩트한 레이아웃)
+        // 공통 내부 박스 래퍼 함수 (모서리 둥글기 rounded-xl 및 컴팩트한 레이아웃)
         function panelWrapper(contentHtml) {
-            return `<div class="bg-white rounded-2xl border border-neutral-200 shadow-xl lg:shadow-sm p-5 w-full max-w-lg max-h-[85vh] lg:max-h-[calc(100vh-10.5rem)] overflow-y-auto relative">${contentHtml}</div>`;
+            return `<div class="bg-white rounded-xl border border-neutral-200 shadow-sm p-4 w-full max-w-lg max-h-[85vh] lg:max-h-[calc(100vh-10.5rem)] overflow-y-auto relative">${contentHtml}</div>`;
         }
 
         function closeAllSidePanels() {
@@ -523,7 +526,7 @@
                     <form id="itemPanelForm" onsubmit="saveItem(event, 'ITEM')" class="space-y-3">
                         <div>
                             <label class="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">PHOTO</label>
-                            <div class="w-40 h-40 mx-auto bg-neutral-50 border-2 border-dashed border-neutral-200 rounded-2xl flex flex-col items-center justify-center relative overflow-hidden cursor-pointer hover:border-pink-500 transition-all shadow-xs" onclick="document.getElementById('itemPhotoFile').click()">
+                            <div class="w-40 h-40 mx-auto bg-neutral-50 border-2 border-dashed border-neutral-200 rounded-xl flex flex-col items-center justify-center relative overflow-hidden cursor-pointer hover:border-pink-500 transition-all shadow-xs" onclick="document.getElementById('itemPhotoFile').click()">
                                 <div id="itemPhotoPlaceholder" class="flex flex-col items-center text-neutral-400 p-4 text-center"><i class="fa-solid fa-camera text-xl mb-1.5"></i><span class="text-[11px] font-medium">사진 선택</span></div>
                                 <img id="itemPhotoPreview" src="" alt="Preview" class="absolute inset-0 w-full h-full object-cover hidden">
                             </div>
@@ -601,11 +604,11 @@
                     <form id="sortPanelForm" onsubmit="saveMaster(event, 'SORT')" class="space-y-3">
                         <div>
                             <label class="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">PHOTO (ITEM 사진 선택)</label>
-                            <div class="space-y-2 max-h-40 overflow-y-auto p-2 bg-neutral-50 rounded-2xl border border-neutral-200">
+                            <div class="space-y-2 max-h-40 overflow-y-auto p-2 bg-neutral-50 rounded-xl border border-neutral-200">
                                 <div class="grid grid-cols-3 gap-2" id="itemPhotoSelectorGrid">
-                                    <div onclick="selectSortPhotoFromItem('')" class="aspect-square bg-neutral-200 rounded-xl flex items-center justify-center text-[11px] text-neutral-500 cursor-pointer font-medium">선택 안함</div>
+                                    <div onclick="selectSortPhotoFromItem('')" class="aspect-square bg-neutral-200 rounded-lg flex items-center justify-center text-[11px] text-neutral-500 cursor-pointer font-medium">선택 안함</div>
                                     ${items.map(r => `
-                                        <div onclick="selectSortPhotoFromItem(this.dataset.photo)" class="aspect-square rounded-xl overflow-hidden cursor-pointer border-2 border-transparent hover:border-pink-500 relative sort-photo-option" data-photo="${esc(r.photo)}">
+                                        <div onclick="selectSortPhotoFromItem(this.dataset.photo)" class="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 border-transparent hover:border-pink-500 relative sort-photo-option" data-photo="${esc(r.photo)}">
                                             <img src="${esc(imgSrc(r.photo, 'MGWG'))}" class="w-full h-full object-cover">
                                         </div>
                                     `).join('')}
@@ -627,7 +630,7 @@
                     <form id="storePanelForm" onsubmit="saveMaster(event, 'STORE')" class="space-y-3">
                         <div>
                             <label class="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">PHOTO</label>
-                            <div class="w-40 h-40 mx-auto bg-neutral-50 border-2 border-dashed border-neutral-200 rounded-2xl flex flex-col items-center justify-center relative overflow-hidden cursor-pointer hover:border-pink-500 transition-all shadow-xs" onclick="document.getElementById('storePhotoFile').click()">
+                            <div class="w-40 h-40 mx-auto bg-neutral-50 border-2 border-dashed border-neutral-200 rounded-xl flex flex-col items-center justify-center relative overflow-hidden cursor-pointer hover:border-pink-500 transition-all shadow-xs" onclick="document.getElementById('storePhotoFile').click()">
                                 <div id="storePhotoPlaceholder" class="flex flex-col items-center text-neutral-400 p-4 text-center"><i class="fa-solid fa-camera text-xl mb-1.5"></i><span class="text-[11px] font-medium">사진 선택</span></div>
                                 <img id="storePhotoPreview" src="" alt="Preview" class="absolute inset-0 w-full h-full object-cover hidden">
                             </div>
@@ -688,7 +691,7 @@
                     <div class="space-y-3">
                         <div>
                             <label class="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">PHOTO</label>
-                            <div class="w-40 h-40 mx-auto bg-neutral-50 border border-neutral-200 rounded-2xl overflow-hidden shadow-xs relative">
+                            <div class="w-40 h-40 mx-auto bg-neutral-50 border border-neutral-200 rounded-xl overflow-hidden shadow-xs relative">
                                 <img src="${esc(imgSrc(item.photo, 'MGWG'))}" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/400x400/f3f4f6/a3a3a3?text=MGWG'">
                             </div>
                         </div>
@@ -741,7 +744,7 @@
                     <div class="space-y-3">
                         <div>
                             <label class="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">PHOTO</label>
-                            <div class="w-40 h-40 mx-auto bg-neutral-50 border border-neutral-200 rounded-2xl overflow-hidden shadow-xs relative">
+                            <div class="w-40 h-40 mx-auto bg-neutral-50 border border-neutral-200 rounded-xl overflow-hidden shadow-xs relative">
                                 <img src="${sortObj.photo || 'https://placehold.co/400x400/f3f4f6/a3a3a3?text=SORT'}" class="w-full h-full object-cover">
                             </div>
                         </div>
@@ -758,7 +761,7 @@
                                     const stName = st ? st.name : '기타';
                                     return `
                                         <div class="flex items-center gap-3 p-2 bg-neutral-50 border border-neutral-200 rounded-xl text-xs">
-                                            <div class="w-9 h-9 rounded-full overflow-hidden shrink-0 border border-neutral-200 bg-white">
+                                            <div class="w-9 h-9 rounded-lg overflow-hidden shrink-0 border border-neutral-200 bg-white">
                                                 <img src="${esc(imgSrc(item.photo, 'MGWG'))}" class="w-full h-full object-cover">
                                             </div>
                                             <div class="flex-1 min-w-0">
@@ -787,7 +790,7 @@
                     <div class="space-y-3">
                         <div>
                             <label class="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">PHOTO</label>
-                            <div class="w-40 h-40 mx-auto bg-neutral-50 border border-neutral-200 rounded-2xl overflow-hidden shadow-xs relative">
+                            <div class="w-40 h-40 mx-auto bg-neutral-50 border border-neutral-200 rounded-xl overflow-hidden shadow-xs relative">
                                 <img src="${storeObj.photo || 'https://placehold.co/400x400/f3f4f6/a3a3a3?text=STORE'}" class="w-full h-full object-cover">
                             </div>
                         </div>
@@ -818,7 +821,7 @@
                                 ${matchedItems.length === 0 ? '<div class="p-3 text-center text-xs text-neutral-400 bg-neutral-50 rounded-xl">연결된 아이템이 없습니다.</div>' : ''}
                                 ${matchedItems.map(item => `
                                     <div class="flex items-center gap-3 p-2 bg-neutral-50 border border-neutral-200 rounded-xl text-xs">
-                                        <div class="w-9 h-9 rounded-full overflow-hidden shrink-0 border border-neutral-200 bg-white">
+                                        <div class="w-9 h-9 rounded-lg overflow-hidden shrink-0 border border-neutral-200 bg-white">
                                             <img src="${esc(imgSrc(item.photo, 'MGWG'))}" class="w-full h-full object-cover">
                                         </div>
                                         <div class="flex-1 min-w-0">
@@ -847,7 +850,7 @@
                     <form id="itemPanelForm" onsubmit="saveItem(event, 'ITEM')" class="space-y-3">
                         <div>
                             <label class="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">PHOTO</label>
-                            <div class="w-40 h-40 mx-auto bg-neutral-50 border-2 border-dashed border-neutral-200 rounded-2xl flex flex-col items-center justify-center relative overflow-hidden cursor-pointer hover:border-pink-500 transition-all shadow-xs" onclick="document.getElementById('itemPhotoFile').click()">
+                            <div class="w-40 h-40 mx-auto bg-neutral-50 border-2 border-dashed border-neutral-200 rounded-xl flex flex-col items-center justify-center relative overflow-hidden cursor-pointer hover:border-pink-500 transition-all shadow-xs" onclick="document.getElementById('itemPhotoFile').click()">
                                 <div id="itemPhotoPlaceholder" class="flex flex-col items-center text-neutral-400 p-4 text-center ${item.photo ? 'hidden' : ''}"><i class="fa-solid fa-camera text-xl mb-1.5"></i><span class="text-[11px] font-medium">사진 선택</span></div>
                                 <img id="itemPhotoPreview" src="${esc(imgSrc(item.photo, 'MGWG'))}" alt="Preview" class="absolute inset-0 w-full h-full object-cover ${item.photo ? '' : 'hidden'}">
                             </div>
@@ -927,11 +930,11 @@
                     <form id="sortPanelForm" onsubmit="saveMaster(event, 'SORT')" class="space-y-3">
                         <div>
                             <label class="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">PHOTO (ITEM 사진 선택)</label>
-                            <div class="space-y-2 max-h-40 overflow-y-auto p-2 bg-neutral-50 rounded-2xl border border-neutral-200">
+                            <div class="space-y-2 max-h-40 overflow-y-auto p-2 bg-neutral-50 rounded-xl border border-neutral-200">
                                 <div class="grid grid-cols-3 gap-2" id="itemPhotoSelectorGrid">
-                                    <div onclick="selectSortPhotoFromItem('')" class="aspect-square bg-neutral-200 rounded-xl flex items-center justify-center text-[11px] text-neutral-500 cursor-pointer font-medium">선택 안함</div>
+                                    <div onclick="selectSortPhotoFromItem('')" class="aspect-square bg-neutral-200 rounded-lg flex items-center justify-center text-[11px] text-neutral-500 cursor-pointer font-medium">선택 안함</div>
                                     ${items.filter(r => r.photo && r.sortIds.includes(sortObj.id)).map(r => `
-                                        <div onclick="selectSortPhotoFromItem(this.dataset.photo)" class="aspect-square rounded-xl overflow-hidden cursor-pointer border-2 ${sortObj.photo === r.photo ? 'border-pink-600 border-4' : 'border-transparent'} hover:border-pink-500 relative sort-photo-option" data-photo="${esc(r.photo)}">
+                                        <div onclick="selectSortPhotoFromItem(this.dataset.photo)" class="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 ${sortObj.photo === r.photo ? 'border-pink-600 border-4' : 'border-transparent'} hover:border-pink-500 relative sort-photo-option" data-photo="${esc(r.photo)}">
                                             <img src="${esc(imgSrc(r.photo, 'MGWG'))}" class="w-full h-full object-cover">
                                         </div>
                                     `).join('')}
@@ -956,7 +959,7 @@
                     <form id="storePanelForm" onsubmit="saveMaster(event, 'STORE')" class="space-y-3">
                         <div>
                             <label class="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">PHOTO</label>
-                            <div class="w-40 h-40 mx-auto bg-neutral-50 border-2 border-dashed border-neutral-200 rounded-2xl flex flex-col items-center justify-center relative overflow-hidden cursor-pointer hover:border-pink-500 transition-all shadow-xs" onclick="document.getElementById('storePhotoFile').click()">
+                            <div class="w-40 h-40 mx-auto bg-neutral-50 border-2 border-dashed border-neutral-200 rounded-xl flex flex-col items-center justify-center relative overflow-hidden cursor-pointer hover:border-pink-500 transition-all shadow-xs" onclick="document.getElementById('storePhotoFile').click()">
                                 <div id="storePhotoPlaceholder" class="flex flex-col items-center text-neutral-400 p-4 text-center ${storeObj.photo ? 'hidden' : ''}"><i class="fa-solid fa-camera text-xl mb-1.5"></i><span class="text-[11px] font-medium">사진 선택</span></div>
                                 <img id="storePhotoPreview" src="${storeObj.photo || ''}" alt="Preview" class="absolute inset-0 w-full h-full object-cover ${storeObj.photo ? '' : 'hidden'}">
                             </div>
