@@ -40,6 +40,37 @@
             background: #d4d4d4;
             border-radius: 3px;
         }
+
+        /* ===== 디테일 패널 공통 ===== */
+        .panel-card { padding: 0.875rem; }
+        .panel-head {
+            position: sticky; top: 0; z-index: 10; background: #fff;
+            margin: -0.875rem -0.875rem 0.5rem; padding: 0.375rem 0.875rem 0.5rem;
+            border-bottom: 1px solid #f5f5f5;
+            display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;
+        }
+        .panel-foot { display: none; }
+
+        /* ===== 모바일 전용: 디테일 = 한 페이지 전환 ===== */
+        @media (max-width: 1023px) {
+            /* 디테일이 열리면 이미지 목록 숨김 */
+            body.panel-open .list-col { display: none; }
+            body.panel-open main { padding-top: 0.25rem; padding-bottom: 0.5rem; }
+            body.panel-open .sub-head { padding-top: 0.375rem; padding-bottom: 0.375rem; margin-bottom: 0.25rem; }
+            body.panel-open .sub-head p { display: none; }
+            body.panel-open [id$="SidePanel"] { margin-bottom: 0; }
+
+            .panel-card { padding: 0.25rem 0.875rem 0.875rem; }
+            /* 제목 가운데 정렬 + 위 여백 축소 */
+            .panel-head {
+                position: relative; margin: 0 -0.875rem 0.375rem; padding: 0.125rem 0.875rem;
+                justify-content: flex-end; min-height: 1.75rem;
+            }
+            .panel-title { position: absolute; left: 3rem; right: 3rem; text-align: center; }
+            /* 버튼은 하단으로 */
+            .panel-foot { display: flex; gap: 0.5rem; margin-top: 0.75rem; }
+            .panel-foot > button { flex: 1; padding: 0.625rem 0; font-size: 0.8125rem; border-radius: 0.75rem; }
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col antialiased">
@@ -68,7 +99,7 @@
 
         <!-- ==================== ITEM TAB VIEW ==================== -->
         <div id="viewItem" class="tab-view">
-            <div class="sticky top-16 z-20 bg-neutral-50 -mx-4 px-4 py-3 mb-3">
+            <div class="sub-head sticky top-16 z-20 bg-neutral-50 -mx-4 px-4 py-3 mb-3">
                 <div class="flex items-center justify-between max-w-4xl mx-auto">
                     <div>
                         <h1 class="text-lg font-bold text-neutral-900">마구와구 먹은 기록</h1>
@@ -82,7 +113,7 @@
 
             <!-- 2분할 인라인 레이아웃 (팝업 아님, 타일 영역 박스로 전환) -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start justify-center">
-                <div class="order-2 lg:order-1 w-full max-w-[600px] mx-auto">
+                <div class="list-col order-2 lg:order-1 w-full max-w-[600px] mx-auto">
                     <div id="itemGrid" class="grid grid-cols-3 sm:grid-cols-4 gap-1.5"></div>
                     <div id="itemEmptyState" class="hidden flex flex-col items-center justify-center py-20 text-center bg-white rounded-xl border border-neutral-200">
                         <div class="w-16 h-16 bg-neutral-100 rounded-xl flex items-center justify-center text-neutral-400 mb-3 text-xl">
@@ -100,7 +131,7 @@
 
         <!-- ==================== SORT TAB VIEW ==================== -->
         <div id="viewSort" class="tab-view hidden">
-            <div class="sticky top-16 z-20 bg-neutral-50 -mx-4 px-4 py-3 mb-3">
+            <div class="sub-head sticky top-16 z-20 bg-neutral-50 -mx-4 px-4 py-3 mb-3">
                 <div class="flex items-center justify-between max-w-4xl mx-auto">
                     <div>
                         <h1 class="text-lg font-bold text-neutral-900">마구와구 먹은 메뉴</h1>
@@ -113,7 +144,7 @@
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start justify-center">
-                <div class="order-2 lg:order-1 w-full max-w-[600px] mx-auto">
+                <div class="list-col order-2 lg:order-1 w-full max-w-[600px] mx-auto">
                     <div id="sortGrid" class="grid grid-cols-3 sm:grid-cols-4 gap-1.5"></div>
                     <div id="sortEmptyState" class="hidden flex flex-col items-center justify-center py-20 text-center bg-white rounded-xl border border-neutral-200">
                         <div class="w-16 h-16 bg-neutral-100 rounded-xl flex items-center justify-center text-neutral-400 mb-3 text-xl">
@@ -131,7 +162,7 @@
 
         <!-- ==================== STORE TAB VIEW ==================== -->
         <div id="viewStore" class="tab-view hidden">
-            <div class="sticky top-16 z-20 bg-neutral-50 -mx-4 px-4 py-3 mb-3">
+            <div class="sub-head sticky top-16 z-20 bg-neutral-50 -mx-4 px-4 py-3 mb-3">
                 <div class="flex items-center justify-between max-w-4xl mx-auto">
                     <div>
                         <h1 class="text-lg font-bold text-neutral-900">마구와구 먹은 가게</h1>
@@ -144,7 +175,7 @@
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start justify-center">
-                <div class="order-2 lg:order-1 w-full max-w-[600px] mx-auto">
+                <div class="list-col order-2 lg:order-1 w-full max-w-[600px] mx-auto">
                     <div id="storeGrid" class="grid grid-cols-3 sm:grid-cols-4 gap-1.5"></div>
                     <div id="storeEmptyState" class="hidden flex flex-col items-center justify-center py-20 text-center bg-white rounded-xl border border-neutral-200">
                         <div class="w-16 h-16 bg-neutral-100 rounded-xl flex items-center justify-center text-neutral-400 mb-3 text-xl">
@@ -279,6 +310,7 @@
             document.getElementById('tabStore').className = "px-4 py-1.5 rounded-lg text-xs font-medium text-neutral-500 hover:text-neutral-900 transition-all bg-transparent shadow-none";
 
             closeAllSidePanels();
+            panelScrollY = 0;
 
             if (tabName === 'ITEM') {
                 document.getElementById('viewItem').classList.remove('hidden');
@@ -295,20 +327,24 @@
             }
         }
 
-        // 3 & 4. 상단 불필요한 빈 공간 제거 및 PC 레이아웃 라벨 잘림 방지 (컴팩트 헤더 적용)
+        // 헤더: 모바일에서는 제목 가운데 정렬 + 우측 X만 노출, 액션 버튼은 하단(panel-foot)으로 이동
+        let lastPanelActions = '';
         function panelHeader(title, actionsHtml) {
+            lastPanelActions = actionsHtml || '';
             return `
-                <div class="sticky top-0 z-10 bg-white -mx-3.5 px-3.5 -mt-3.5 pt-1.5 pb-2 mb-2 border-b border-neutral-100 flex items-center justify-between gap-2">
-                    <h2 class="text-sm font-bold text-neutral-900 truncate">${title}</h2>
+                <div class="panel-head">
+                    <h2 class="panel-title text-sm font-bold text-neutral-900 truncate">${title}</h2>
                     <div class="flex items-center gap-1.5 shrink-0">
-                        ${actionsHtml || ''}
+                        <div class="hidden lg:flex items-center gap-1.5">${actionsHtml || ''}</div>
                         <button type="button" onclick="closeAllSidePanels()" class="w-7 h-7 rounded-full bg-neutral-100 hover:bg-neutral-200 text-neutral-600 flex items-center justify-center text-xs"><i class="fa-solid fa-xmark"></i></button>
                     </div>
                 </div>`;
         }
 
         function panelWrapper(contentHtml) {
-            return `<div class="bg-white rounded-xl border border-neutral-200 shadow-sm p-3.5 w-full max-w-lg max-h-[85vh] lg:max-h-[calc(100vh-10.5rem)] overflow-y-auto relative">${contentHtml}</div>`;
+            const foot = lastPanelActions ? `<div class="panel-foot">${lastPanelActions}</div>` : '';
+            lastPanelActions = '';
+            return `<div class="panel-card bg-white rounded-xl border border-neutral-200 shadow-sm w-full max-w-lg lg:max-h-[calc(100vh-10.5rem)] lg:overflow-y-auto relative">${contentHtml}${foot}</div>`;
         }
 
         function closeAllSidePanels() {
@@ -512,10 +548,10 @@
                 panel.classList.remove('hidden');
                 panel.innerHTML = panelWrapper(`
                     ${panelHeader('ITEM ADD', `<button type="submit" form="itemPanelForm" class="px-3 py-1.5 bg-neutral-900 hover:bg-neutral-800 text-white font-semibold rounded-lg text-[11px]">SAVE</button>`)}
-                    <form id="itemPanelForm" onsubmit="saveItem(event, 'ITEM')" class="space-y-3">
+                    <form id="itemPanelForm" onsubmit="saveItem(event, 'ITEM')" class="space-y-2 lg:space-y-3">
                         <div>
                             <label class="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">PHOTO</label>
-                            <div class="w-36 h-36 mx-auto bg-neutral-50 border-2 border-dashed border-neutral-200 rounded-xl flex flex-col items-center justify-center relative overflow-hidden cursor-pointer hover:border-pink-500 transition-all shadow-xs" onclick="document.getElementById('itemPhotoFile').click()">
+                            <div class="w-28 h-28 lg:w-36 lg:h-36 mx-auto bg-neutral-50 border-2 border-dashed border-neutral-200 rounded-xl flex flex-col items-center justify-center relative overflow-hidden cursor-pointer hover:border-pink-500 transition-all shadow-xs" onclick="document.getElementById('itemPhotoFile').click()">
                                 <div id="itemPhotoPlaceholder" class="flex flex-col items-center text-neutral-400 p-4 text-center"><i class="fa-solid fa-camera text-xl mb-1.5"></i><span class="text-[11px] font-medium">사진 선택</span></div>
                                 <img id="itemPhotoPreview" src="" alt="Preview" class="absolute inset-0 w-full h-full object-cover hidden">
                             </div>
@@ -525,7 +561,7 @@
                             <label class="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">ITEM</label>
                             <input type="text" id="itemNameInput" required placeholder="메뉴 이름" class="w-full px-3.5 py-2 bg-neutral-50 border border-neutral-200 rounded-xl text-xs focus:outline-none focus:border-pink-500">
                         </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <div class="grid grid-cols-2 gap-2">
                             <div>
                                 <div class="flex items-center justify-between mb-1">
                                     <label class="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider">SORT (다중)</label>
@@ -589,7 +625,7 @@
                 panel.classList.remove('hidden');
                 panel.innerHTML = panelWrapper(`
                     ${panelHeader('SORT ADD', `<button type="submit" form="sortPanelForm" class="px-3 py-1.5 bg-neutral-900 hover:bg-neutral-800 text-white font-semibold rounded-lg text-[11px]">SAVE</button>`)}
-                    <form id="sortPanelForm" onsubmit="saveMaster(event, 'SORT')" class="space-y-3">
+                    <form id="sortPanelForm" onsubmit="saveMaster(event, 'SORT')" class="space-y-2 lg:space-y-3">
                         <div>
                             <label class="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">PHOTO (ITEM 사진 선택)</label>
                             <div class="space-y-2 max-h-40 overflow-y-auto p-2 bg-neutral-50 rounded-xl border border-neutral-200">
@@ -615,16 +651,16 @@
                 panel.classList.remove('hidden');
                 panel.innerHTML = panelWrapper(`
                     ${panelHeader('STORE ADD', `<button type="submit" form="storePanelForm" class="px-3 py-1.5 bg-neutral-900 hover:bg-neutral-800 text-white font-semibold rounded-lg text-[11px]">SAVE</button>`)}
-                    <form id="storePanelForm" onsubmit="saveMaster(event, 'STORE')" class="space-y-3">
+                    <form id="storePanelForm" onsubmit="saveMaster(event, 'STORE')" class="space-y-2 lg:space-y-3">
                         <div>
                             <label class="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">PHOTO</label>
-                            <div class="w-36 h-36 mx-auto bg-neutral-50 border-2 border-dashed border-neutral-200 rounded-xl flex flex-col items-center justify-center relative overflow-hidden cursor-pointer hover:border-pink-500 transition-all shadow-xs" onclick="document.getElementById('storePhotoFile').click()">
+                            <div class="w-28 h-28 lg:w-36 lg:h-36 mx-auto bg-neutral-50 border-2 border-dashed border-neutral-200 rounded-xl flex flex-col items-center justify-center relative overflow-hidden cursor-pointer hover:border-pink-500 transition-all shadow-xs" onclick="document.getElementById('storePhotoFile').click()">
                                 <div id="storePhotoPlaceholder" class="flex flex-col items-center text-neutral-400 p-4 text-center"><i class="fa-solid fa-camera text-xl mb-1.5"></i><span class="text-[11px] font-medium">사진 선택</span></div>
                                 <img id="storePhotoPreview" src="" alt="Preview" class="absolute inset-0 w-full h-full object-cover hidden">
                             </div>
                             <input type="file" id="storePhotoFile" accept="image/*" onchange="handleImageUpload(event, 'storePhotoPreview', 'storePhotoPlaceholder')" class="hidden">
                         </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <div class="grid grid-cols-2 gap-2">
                             <div>
                                 <label class="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">STORE</label>
                                 <input type="text" id="storeNameInput" required placeholder="가게 이름" class="w-full px-3.5 py-2 bg-neutral-50 border border-neutral-200 rounded-xl text-xs focus:outline-none focus:border-pink-500">
@@ -675,10 +711,10 @@
 
                 panel.innerHTML = panelWrapper(`
                     ${panelHeader('ITEM DETAIL', `<button type="button" onclick="openEditPanel('ITEM', '${item.id}')" class="px-3 py-1.5 bg-neutral-900 hover:bg-neutral-800 text-white font-semibold rounded-lg text-[11px]">EDIT</button><button type="button" onclick="deleteEntry('ITEM', '${item.id}')" class="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 font-semibold rounded-lg text-[11px]">DELETE</button>`)}
-                    <div class="space-y-3">
+                    <div class="space-y-2 lg:space-y-3">
                         <div>
                             <label class="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">PHOTO</label>
-                            <div class="w-36 h-36 mx-auto bg-neutral-50 border border-neutral-200 rounded-xl overflow-hidden shadow-xs relative">
+                            <div class="w-28 h-28 lg:w-36 lg:h-36 mx-auto bg-neutral-50 border border-neutral-200 rounded-xl overflow-hidden shadow-xs relative">
                                 <img src="${esc(imgSrc(item.photo, 'MGWG'))}" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/400x400/f3f4f6/a3a3a3?text=MGWG'">
                             </div>
                         </div>
@@ -686,7 +722,7 @@
                             <label class="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">ITEM</label>
                             <div class="w-full px-3.5 py-2 bg-neutral-50 border border-neutral-200 rounded-xl text-xs font-semibold text-neutral-900">${esc(item.name)}</div>
                         </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <div class="grid grid-cols-2 gap-2">
                             <div>
                                 <label class="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">SORT</label>
                                 <div class="w-full px-3 py-2 bg-neutral-50 border border-neutral-200 rounded-xl text-xs text-neutral-800 truncate">${esc(matchedSortNames)}</div>
@@ -727,10 +763,10 @@
 
                 panel.innerHTML = panelWrapper(`
                     ${panelHeader('SORT DETAIL', `<button type="button" onclick="openEditPanel('SORT', '${sortObj.id}')" class="px-3 py-1.5 bg-neutral-900 hover:bg-neutral-800 text-white font-semibold rounded-lg text-[11px]">EDIT</button><button type="button" onclick="deleteEntry('SORT', '${sortObj.id}')" class="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 font-semibold rounded-lg text-[11px]">DELETE</button>`)}
-                    <div class="space-y-3">
+                    <div class="space-y-2 lg:space-y-3">
                         <div>
                             <label class="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">PHOTO</label>
-                            <div class="w-36 h-36 mx-auto bg-neutral-50 border border-neutral-200 rounded-xl overflow-hidden shadow-xs relative">
+                            <div class="w-28 h-28 lg:w-36 lg:h-36 mx-auto bg-neutral-50 border border-neutral-200 rounded-xl overflow-hidden shadow-xs relative">
                                 <img src="${sortObj.photo || 'https://placehold.co/400x400/f3f4f6/a3a3a3?text=SORT'}" class="w-full h-full object-cover">
                             </div>
                         </div>
@@ -740,7 +776,7 @@
                         </div>
                         <div>
                             <label class="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">ITEM LIST (${matchedItems.length})</label>
-                            <div class="space-y-2 max-h-48 overflow-y-auto pr-1">
+                            <div class="space-y-2 max-h-[26vh] lg:max-h-48 overflow-y-auto pr-1">
                                 ${matchedItems.length === 0 ? '<div class="p-3 text-center text-xs text-neutral-400 bg-neutral-50 rounded-xl">연결된 아이템이 없습니다.</div>' : ''}
                                 ${matchedItems.map(item => {
                                     const st = stores.find(s => s.id === item.storeId);
@@ -773,14 +809,14 @@
 
                 panel.innerHTML = panelWrapper(`
                     ${panelHeader('STORE DETAIL', `<button type="button" onclick="openEditPanel('STORE', '${storeObj.id}')" class="px-3 py-1.5 bg-neutral-900 hover:bg-neutral-800 text-white font-semibold rounded-lg text-[11px]">EDIT</button><button type="button" onclick="deleteEntry('STORE', '${storeObj.id}')" class="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 font-semibold rounded-lg text-[11px]">DELETE</button>`)}
-                    <div class="space-y-3">
+                    <div class="space-y-2 lg:space-y-3">
                         <div>
                             <label class="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">PHOTO</label>
-                            <div class="w-36 h-36 mx-auto bg-neutral-50 border border-neutral-200 rounded-xl overflow-hidden shadow-xs relative">
+                            <div class="w-28 h-28 lg:w-36 lg:h-36 mx-auto bg-neutral-50 border border-neutral-200 rounded-xl overflow-hidden shadow-xs relative">
                                 <img src="${storeObj.photo || 'https://placehold.co/400x400/f3f4f6/a3a3a3?text=STORE'}" class="w-full h-full object-cover">
                             </div>
                         </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <div class="grid grid-cols-2 gap-2">
                             <div>
                                 <label class="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">STORE</label>
                                 <div class="w-full px-3.5 py-2 bg-neutral-50 border border-neutral-200 rounded-xl text-xs font-bold truncate" style="color: ${badgeColor};">${esc(storeObj.name)}</div>
@@ -802,7 +838,7 @@
                         </div>
                         <div>
                             <label class="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">ITEM LIST (${matchedItems.length})</label>
-                            <div class="space-y-2 max-h-44 overflow-y-auto pr-1">
+                            <div class="space-y-2 max-h-[26vh] lg:max-h-44 overflow-y-auto pr-1">
                                 ${matchedItems.length === 0 ? '<div class="p-3 text-center text-xs text-neutral-400 bg-neutral-50 rounded-xl">연결된 아이템이 없습니다.</div>' : ''}
                                 ${matchedItems.map(item => `
                                     <div class="flex items-center gap-3 p-2 bg-neutral-50 border border-neutral-200 rounded-xl text-xs">
@@ -832,10 +868,10 @@
                 panel.classList.remove('hidden');
                 panel.innerHTML = panelWrapper(`
                     ${panelHeader('ITEM EDIT', `<button type="submit" form="itemPanelForm" class="px-3 py-1.5 bg-neutral-900 hover:bg-neutral-800 text-white font-semibold rounded-lg text-[11px]">SAVE</button><button type="button" onclick="deleteEntry('ITEM', '${item.id}')" class="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 font-semibold rounded-lg text-[11px]">DELETE</button>`)}
-                    <form id="itemPanelForm" onsubmit="saveItem(event, 'ITEM')" class="space-y-3">
+                    <form id="itemPanelForm" onsubmit="saveItem(event, 'ITEM')" class="space-y-2 lg:space-y-3">
                         <div>
                             <label class="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">PHOTO</label>
-                            <div class="w-36 h-36 mx-auto bg-neutral-50 border-2 border-dashed border-neutral-200 rounded-xl flex flex-col items-center justify-center relative overflow-hidden cursor-pointer hover:border-pink-500 transition-all shadow-xs" onclick="document.getElementById('itemPhotoFile').click()">
+                            <div class="w-28 h-28 lg:w-36 lg:h-36 mx-auto bg-neutral-50 border-2 border-dashed border-neutral-200 rounded-xl flex flex-col items-center justify-center relative overflow-hidden cursor-pointer hover:border-pink-500 transition-all shadow-xs" onclick="document.getElementById('itemPhotoFile').click()">
                                 <div id="itemPhotoPlaceholder" class="flex flex-col items-center text-neutral-400 p-4 text-center ${item.photo ? 'hidden' : ''}"><i class="fa-solid fa-camera text-xl mb-1.5"></i><span class="text-[11px] font-medium">사진 선택</span></div>
                                 <img id="itemPhotoPreview" src="${esc(imgSrc(item.photo, 'MGWG'))}" alt="Preview" class="absolute inset-0 w-full h-full object-cover ${item.photo ? '' : 'hidden'}">
                             </div>
@@ -845,7 +881,7 @@
                             <label class="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">ITEM</label>
                             <input type="text" id="itemNameInput" required value="${esc(item.name)}" class="w-full px-3.5 py-2 bg-neutral-50 border border-neutral-200 rounded-xl text-xs focus:outline-none focus:border-pink-500">
                         </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <div class="grid grid-cols-2 gap-2">
                             <div>
                                 <div class="flex items-center justify-between mb-1">
                                     <label class="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider">SORT (다중)</label>
@@ -911,7 +947,7 @@
                 panel.classList.remove('hidden');
                 panel.innerHTML = panelWrapper(`
                     ${panelHeader('SORT EDIT', `<button type="submit" form="sortPanelForm" class="px-3 py-1.5 bg-neutral-900 hover:bg-neutral-800 text-white font-semibold rounded-lg text-[11px]">SAVE</button><button type="button" onclick="deleteEntry('SORT', '${sortObj.id}')" class="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 font-semibold rounded-lg text-[11px]">DELETE</button>`)}
-                    <form id="sortPanelForm" onsubmit="saveMaster(event, 'SORT')" class="space-y-3">
+                    <form id="sortPanelForm" onsubmit="saveMaster(event, 'SORT')" class="space-y-2 lg:space-y-3">
                         <div>
                             <label class="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">PHOTO (ITEM 사진 선택)</label>
                             <div class="space-y-2 max-h-40 overflow-y-auto p-2 bg-neutral-50 rounded-xl border border-neutral-200">
@@ -940,16 +976,16 @@
                 panel.classList.remove('hidden');
                 panel.innerHTML = panelWrapper(`
                     ${panelHeader('STORE EDIT', `<button type="submit" form="storePanelForm" class="px-3 py-1.5 bg-neutral-900 hover:bg-neutral-800 text-white font-semibold rounded-lg text-[11px]">SAVE</button><button type="button" onclick="deleteEntry('STORE', '${storeObj.id}')" class="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 font-semibold rounded-lg text-[11px]">DELETE</button>`)}
-                    <form id="storePanelForm" onsubmit="saveMaster(event, 'STORE')" class="space-y-3">
+                    <form id="storePanelForm" onsubmit="saveMaster(event, 'STORE')" class="space-y-2 lg:space-y-3">
                         <div>
                             <label class="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">PHOTO</label>
-                            <div class="w-36 h-36 mx-auto bg-neutral-50 border-2 border-dashed border-neutral-200 rounded-xl flex flex-col items-center justify-center relative overflow-hidden cursor-pointer hover:border-pink-500 transition-all shadow-xs" onclick="document.getElementById('storePhotoFile').click()">
+                            <div class="w-28 h-28 lg:w-36 lg:h-36 mx-auto bg-neutral-50 border-2 border-dashed border-neutral-200 rounded-xl flex flex-col items-center justify-center relative overflow-hidden cursor-pointer hover:border-pink-500 transition-all shadow-xs" onclick="document.getElementById('storePhotoFile').click()">
                                 <div id="storePhotoPlaceholder" class="flex flex-col items-center text-neutral-400 p-4 text-center ${storeObj.photo ? 'hidden' : ''}"><i class="fa-solid fa-camera text-xl mb-1.5"></i><span class="text-[11px] font-medium">사진 선택</span></div>
                                 <img id="storePhotoPreview" src="${storeObj.photo || ''}" alt="Preview" class="absolute inset-0 w-full h-full object-cover ${storeObj.photo ? '' : 'hidden'}">
                             </div>
                             <input type="file" id="storePhotoFile" accept="image/*" onchange="handleImageUpload(event, 'storePhotoPreview', 'storePhotoPlaceholder')" class="hidden">
                         </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <div class="grid grid-cols-2 gap-2">
                             <div>
                                 <label class="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">STORE</label>
                                 <input type="text" id="storeNameInput" required value="${esc(storeObj.name)}" class="w-full px-3.5 py-2 bg-neutral-50 border border-neutral-200 rounded-xl text-xs focus:outline-none focus:border-pink-500">
@@ -1062,6 +1098,27 @@
                 renderStores();
             }
         }
+
+        // 모바일: 디테일이 열리면 body.panel-open 으로 목록을 숨기고, 닫으면 원래 스크롤 위치로 복귀
+        let panelOpenState = false, panelScrollY = 0;
+        function updatePanelState() {
+            const open = ['itemSidePanel', 'sortSidePanel', 'storeSidePanel']
+                .some(id => !document.getElementById(id).classList.contains('hidden'));
+            if (open === panelOpenState) return;
+            panelOpenState = open;
+            const mobile = window.matchMedia('(max-width: 1023px)').matches;
+            if (open) {
+                panelScrollY = window.scrollY;
+                document.body.classList.add('panel-open');
+                if (mobile) window.scrollTo(0, 0);
+            } else {
+                document.body.classList.remove('panel-open');
+                if (mobile) window.scrollTo(0, panelScrollY);
+            }
+        }
+        const panelObserver = new MutationObserver(updatePanelState);
+        ['itemSidePanel', 'sortSidePanel', 'storeSidePanel'].forEach(id =>
+            panelObserver.observe(document.getElementById(id), { attributes: true, attributeFilter: ['class'] }));
     </script>
 </body>
 </html>
