@@ -21,7 +21,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         html, body {
-            overscroll-behavior-y: none; /* 오버스크롤 텐션 제거 */
+            overscroll-behavior-y: none; /* 1. 스크롤 텐션/바운스 현상 완전 제거 */
+            -webkit-overflow-scrolling: touch;
         }
         body {
             font-family: 'Inter', sans-serif;
@@ -53,7 +54,7 @@
                 <span class="text-xl font-bold tracking-tight text-neutral-900">MGWG</span>
             </div>
 
-            <!-- Tab Navigation -->
+            <!-- Tab Navigation (항상 클릭 가능) -->
             <nav class="flex space-x-1 bg-neutral-100 p-1 rounded-xl">
                 <button onclick="switchTab('ITEM')" id="tabItem" class="px-4 py-1.5 rounded-lg text-xs font-semibold bg-white text-neutral-900 shadow-xs transition-all">ITEM</button>
                 <button onclick="switchTab('SORT')" id="tabSort" class="px-4 py-1.5 rounded-lg text-xs font-medium text-neutral-500 hover:text-neutral-900 transition-all">SORT</button>
@@ -68,17 +69,18 @@
         <!-- ==================== ITEM TAB VIEW ==================== -->
         <div id="viewItem" class="tab-view">
             <div class="sticky top-16 z-20 bg-neutral-50 -mx-4 px-4 py-3 mb-3">
-            <div class="flex items-center justify-between max-w-4xl mx-auto">
-                <div>
-                    <h1 class="text-lg font-bold text-neutral-900">마구와구 먹은 기록</h1>
-                    <p class="text-xs text-neutral-500 mt-0.5" id="itemCountSubtitle">0 items</p>
+                <div class="flex items-center justify-between max-w-4xl mx-auto">
+                    <div>
+                        <h1 class="text-lg font-bold text-neutral-900">마구와구 먹은 기록</h1>
+                        <p class="text-xs text-neutral-500 mt-0.5" id="itemCountSubtitle">0 items</p>
+                    </div>
+                    <button onclick="openAddPanel('ITEM')" class="px-3.5 py-2 rounded-xl bg-pink-600 hover:bg-pink-700 text-white text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-all active:scale-95">
+                        <i class="fa-solid fa-plus text-xs"></i> ITEM 추가
+                    </button>
                 </div>
-                <button onclick="openAddPanel('ITEM')" class="px-3.5 py-2 rounded-xl bg-pink-600 hover:bg-pink-700 text-white text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-all active:scale-95">
-                    <i class="fa-solid fa-plus text-xs"></i> ITEM 추가
-                </button>
-            </div>
             </div>
 
+            <!-- 2분할 인라인 레이아웃 (팝업 아님, 타일 영역 박스로 전환) -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start justify-center">
                 <div class="order-2 lg:order-1 w-full max-w-[600px] mx-auto">
                     <div id="itemGrid" class="grid grid-cols-3 sm:grid-cols-4 gap-1.5"></div>
@@ -99,15 +101,15 @@
         <!-- ==================== SORT TAB VIEW ==================== -->
         <div id="viewSort" class="tab-view hidden">
             <div class="sticky top-16 z-20 bg-neutral-50 -mx-4 px-4 py-3 mb-3">
-            <div class="flex items-center justify-between max-w-4xl mx-auto">
-                <div>
-                    <h1 class="text-lg font-bold text-neutral-900">마구와구 먹은 메뉴</h1>
-                    <p class="text-xs text-neutral-500 mt-0.5" id="sortCountSubtitle">0 sorts</p>
+                <div class="flex items-center justify-between max-w-4xl mx-auto">
+                    <div>
+                        <h1 class="text-lg font-bold text-neutral-900">마구와구 먹은 메뉴</h1>
+                        <p class="text-xs text-neutral-500 mt-0.5" id="sortCountSubtitle">0 sorts</p>
+                    </div>
+                    <button onclick="openAddPanel('SORT')" class="px-3.5 py-2 rounded-xl bg-neutral-900 hover:bg-neutral-800 text-white text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-all">
+                        <i class="fa-solid fa-plus text-xs"></i> SORT 추가
+                    </button>
                 </div>
-                <button onclick="openAddPanel('SORT')" class="px-3.5 py-2 rounded-xl bg-neutral-900 hover:bg-neutral-800 text-white text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-all">
-                    <i class="fa-solid fa-plus text-xs"></i> SORT 추가
-                </button>
-            </div>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start justify-center">
@@ -130,15 +132,15 @@
         <!-- ==================== STORE TAB VIEW ==================== -->
         <div id="viewStore" class="tab-view hidden">
             <div class="sticky top-16 z-20 bg-neutral-50 -mx-4 px-4 py-3 mb-3">
-            <div class="flex items-center justify-between max-w-4xl mx-auto">
-                <div>
-                    <h1 class="text-lg font-bold text-neutral-900">마구와구 먹은 가게</h1>
-                    <p class="text-xs text-neutral-500 mt-0.5" id="storeCountSubtitle">0 stores</p>
+                <div class="flex items-center justify-between max-w-4xl mx-auto">
+                    <div>
+                        <h1 class="text-lg font-bold text-neutral-900">마구와구 먹은 가게</h1>
+                        <p class="text-xs text-neutral-500 mt-0.5" id="storeCountSubtitle">0 stores</p>
+                    </div>
+                    <button onclick="openAddPanel('STORE')" class="px-3.5 py-2 rounded-xl bg-neutral-900 hover:bg-neutral-800 text-white text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-all">
+                        <i class="fa-solid fa-plus text-xs"></i> STORE 추가
+                    </button>
                 </div>
-                <button onclick="openAddPanel('STORE')" class="px-3.5 py-2 rounded-xl bg-neutral-900 hover:bg-neutral-800 text-white text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-all">
-                    <i class="fa-solid fa-plus text-xs"></i> STORE 추가
-                </button>
-            </div>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start justify-center">
@@ -160,9 +162,8 @@
 
     </main>
 
-    <!-- JavaScript Application Logic (구글 스프레드시트 연동 적용) -->
+    <!-- JavaScript Application Logic -->
     <script>
-        // ★ 배포한 구글 앱스크립트 웹 앱 URL을 여기에 입력하세요 ★
         const API_URL = 'https://script.google.com/macros/s/AKfycbwT-xZRjLQP8uBgH9v-0ZwtKTeA3iZ_qrnww1z_4kI7vSKbHYxGp-TJwCjDWiGt5-cnyw/exec';
 
         let items = [];
@@ -176,7 +177,6 @@
         const imgSrc = (url, label) => url || PLACEHOLDER(label);
         const esc = (v) => String(v ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 
-        // ---- 시트에서 읽은 행을 앱 형식으로 정리 (시트 컬럼 = 앱 필드, 모두 id/name 기준) ----
         function normalizeItem(r) {
             let sortIds = r.sortIds;
             if (typeof sortIds === 'string') {
@@ -197,7 +197,6 @@
         const normalizeSort = (s) => ({ id: String(s.id), name: String(s.name ?? ''), photo: s.photo || '' });
         const normalizeStore = (s) => ({ id: String(s.id), name: String(s.name ?? ''), color: s.color || '#0284c7', address: String(s.address ?? ''), photo: s.photo || '' });
 
-        // 데이터 서버(스프레드시트)로부터 불러오기 (GET 1회 → {items, sorts, stores})
         async function loadAllData() {
             try {
                 const res = await fetch(API_URL);
@@ -217,16 +216,15 @@
                 renderStores();
             } catch (err) {
                 console.error("데이터 로드 실패:", err);
-                alert("스프레드시트에서 데이터를 불러오지 못했습니다. API_URL과 배포 설정을 확인해주세요.");
+                alert("스프레드시트에서 데이터를 불러오지 못했습니다.");
             }
         }
 
-        // 데이터 서버(스프레드시트)로 저장하기 — 항상 3개 시트 전체를 한 번에 전송, 요청은 순차 처리
         let syncQueue = Promise.resolve();
         function syncData() {
             syncQueue = syncQueue.then(doSync).catch(err => {
                 console.error("데이터 동기화 실패:", err);
-                alert("스프레드시트 저장에 실패했습니다.\n사진/내용이 서버에 저장되지 않았을 수 있습니다.\n\n[원인] " + (err && err.message ? err.message : err));
+                alert("스프레드시트 저장에 실패했습니다.");
             });
             return syncQueue;
         }
@@ -234,7 +232,7 @@
         async function doSync() {
             const res = await fetch(API_URL, {
                 method: 'POST',
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // preflight(CORS) 방지
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                 body: JSON.stringify({ action: 'sync', items, sorts, stores })
             });
             const result = await res.json();
@@ -242,7 +240,6 @@
             applyUploadedPhotos(result.photos || {});
         }
 
-        // 서버가 드라이브에 올린 이미지 URL로 로컬의 base64 사진을 교체
         function applyUploadedPhotos(photos) {
             [[items, 'items'], [sorts, 'sorts'], [stores, 'stores']].forEach(([list, key]) => {
                 const map = photos[key] || {};
@@ -254,7 +251,6 @@
 
         window.onload = loadAllData;
 
-        // 앱 설치용 서비스워커 등록 (https 환경에서만 동작, 실패해도 앱 사용에는 영향 없음)
         if ('serviceWorker' in navigator && location.protocol === 'https:') {
             navigator.serviceWorker.register('sw.js').catch(() => {});
         }
@@ -299,10 +295,10 @@
             }
         }
 
-        // 패널 상단 고정 헤더: 제목 + 액션 버튼(SAVE/EDIT/DELETE) + 닫기 (상단 여백 최소화)
+        // 3 & 4. 상단 불필요한 빈 공간 제거 및 PC 레이아웃 라벨 잘림 방지 (컴팩트 헤더 적용)
         function panelHeader(title, actionsHtml) {
             return `
-                <div class="sticky top-0 z-10 bg-white -mx-4 px-4 -mt-4 pt-3 pb-2 mb-2 border-b border-neutral-100 flex items-center justify-between gap-2">
+                <div class="sticky top-0 z-10 bg-white -mx-3.5 px-3.5 -mt-3.5 pt-1.5 pb-2 mb-2 border-b border-neutral-100 flex items-center justify-between gap-2">
                     <h2 class="text-sm font-bold text-neutral-900 truncate">${title}</h2>
                     <div class="flex items-center gap-1.5 shrink-0">
                         ${actionsHtml || ''}
@@ -311,9 +307,8 @@
                 </div>`;
         }
 
-        // 공통 내부 박스 래퍼 함수 (모서리 둥글기 rounded-xl 및 컴팩트한 레이아웃)
         function panelWrapper(contentHtml) {
-            return `<div class="bg-white rounded-xl border border-neutral-200 shadow-sm p-4 w-full max-w-lg max-h-[85vh] lg:max-h-[calc(100vh-10.5rem)] overflow-y-auto relative">${contentHtml}</div>`;
+            return `<div class="bg-white rounded-xl border border-neutral-200 shadow-sm p-3.5 w-full max-w-lg max-h-[85vh] lg:max-h-[calc(100vh-10.5rem)] overflow-y-auto relative">${contentHtml}</div>`;
         }
 
         function closeAllSidePanels() {
@@ -324,7 +319,6 @@
             uploadedBase64Image = '';
         }
 
-        // 업로드 이미지를 정사각형(중앙 크롭) 400x400 JPEG 썸네일로 변환 → photo
         const THUMB_SIZE = 400;
         function handleImageUpload(event, previewId, placeholderId) {
             const file = event.target.files[0];
@@ -345,13 +339,12 @@
                     if (preview) { preview.src = uploadedBase64Image; preview.classList.remove('hidden'); }
                     if (placeholder) { placeholder.classList.add('hidden'); }
                 };
-                img.onerror = () => alert('이 이미지 형식은 읽을 수 없습니다. JPG/PNG 사진으로 다시 시도해주세요.');
+                img.onerror = () => alert('이 이미지 형식은 읽을 수 없습니다.');
                 img.src = e.target.result;
             };
             reader.readAsDataURL(file);
         }
 
-        // ==================== ITEM LOGIC ====================
         function renderItems() {
             document.getElementById('itemCountSubtitle').innerText = `${items.length} items`;
             const grid = document.getElementById('itemGrid');
@@ -376,7 +369,7 @@
                 itemEl.innerHTML = `
                     <img src="${esc(imgSrc(item.photo, 'MGWG'))}" alt="${esc(item.name)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onerror="this.src='https://placehold.co/400x400/f3f4f6/a3a3a3?text=MGWG'">
                     <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent pt-6 pb-2.5 px-3 flex flex-col items-center text-center">
-                        <span class="inline-block text-[11px] font-bold mb-0.5 truncate max-w-[90%] drop-shadow-sm" style="color: ${storeColor};">${esc(storeName)}</span>
+                        <span class="block text-[11px] font-bold mb-0.5 truncate max-w-[90%] drop-shadow-sm" style="color: ${storeColor};">${esc(storeName)}</span>
                         <p class="text-sm font-bold text-white truncate max-w-full leading-tight">${esc(item.name)}</p>
                     </div>
                 `;
@@ -384,7 +377,6 @@
             });
         }
 
-        // ==================== SORT LOGIC ====================
         function renderSorts() {
             sorts.sort((a, b) => a.name.localeCompare(b.name, 'ko'));
             document.getElementById('sortCountSubtitle').innerText = `${sorts.length} sorts`;
@@ -413,7 +405,6 @@
             });
         }
 
-        // ==================== STORE LOGIC ====================
         function renderStores() {
             sortStoresByRecentItem();
             document.getElementById('storeCountSubtitle').innerText = `${stores.length} stores`;
@@ -445,7 +436,6 @@
             });
         }
 
-        // ==================== QUICK ADD HELPERS ====================
         function toggleQuickAddSortInput() {
             const container = document.getElementById('quickAddSortContainer');
             container.classList.toggle('hidden');
@@ -480,7 +470,7 @@
             listEl.innerHTML = sorts.map(s => `
                 <label class="flex items-center gap-2 text-xs text-neutral-700 cursor-pointer px-1 py-0.5 hover:bg-neutral-100 rounded">
                     <input type="checkbox" name="itemSortCheckbox" value="${s.id}" ${checkedIds.includes(s.id) ? 'checked' : ''} class="rounded border-neutral-300 text-pink-600 focus:ring-pink-500">
-                    <span>${esc(s.name)}</span>
+                    <span class="truncate">${esc(s.name)}</span>
                 </label>
             `).join('');
         }
@@ -513,7 +503,6 @@
             document.getElementById('quickAddStoreContainer').classList.add('hidden');
         }
 
-        // ==================== SIDE PANELS ====================
         function openAddPanel(type) {
             currentEditingId = null;
             uploadedBase64Image = '';
@@ -526,7 +515,7 @@
                     <form id="itemPanelForm" onsubmit="saveItem(event, 'ITEM')" class="space-y-3">
                         <div>
                             <label class="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">PHOTO</label>
-                            <div class="w-40 h-40 mx-auto bg-neutral-50 border-2 border-dashed border-neutral-200 rounded-xl flex flex-col items-center justify-center relative overflow-hidden cursor-pointer hover:border-pink-500 transition-all shadow-xs" onclick="document.getElementById('itemPhotoFile').click()">
+                            <div class="w-36 h-36 mx-auto bg-neutral-50 border-2 border-dashed border-neutral-200 rounded-xl flex flex-col items-center justify-center relative overflow-hidden cursor-pointer hover:border-pink-500 transition-all shadow-xs" onclick="document.getElementById('itemPhotoFile').click()">
                                 <div id="itemPhotoPlaceholder" class="flex flex-col items-center text-neutral-400 p-4 text-center"><i class="fa-solid fa-camera text-xl mb-1.5"></i><span class="text-[11px] font-medium">사진 선택</span></div>
                                 <img id="itemPhotoPreview" src="" alt="Preview" class="absolute inset-0 w-full h-full object-cover hidden">
                             </div>
@@ -536,7 +525,6 @@
                             <label class="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">ITEM</label>
                             <input type="text" id="itemNameInput" required placeholder="메뉴 이름" class="w-full px-3.5 py-2 bg-neutral-50 border border-neutral-200 rounded-xl text-xs focus:outline-none focus:border-pink-500">
                         </div>
-                        <!-- SORT와 STORE를 한 줄(Grid)로 묶음 -->
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                             <div>
                                 <div class="flex items-center justify-between mb-1">
@@ -551,7 +539,7 @@
                                     ${sorts.map(s => `
                                         <label class="flex items-center gap-2 text-xs text-neutral-700 cursor-pointer px-1 py-0.5 hover:bg-neutral-100 rounded">
                                             <input type="checkbox" name="itemSortCheckbox" value="${s.id}" class="rounded border-neutral-300 text-pink-600 focus:ring-pink-500">
-                                            <span>${esc(s.name)}</span>
+                                            <span class="truncate">${esc(s.name)}</span>
                                         </label>
                                     `).join('')}
                                 </div>
@@ -630,13 +618,12 @@
                     <form id="storePanelForm" onsubmit="saveMaster(event, 'STORE')" class="space-y-3">
                         <div>
                             <label class="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">PHOTO</label>
-                            <div class="w-40 h-40 mx-auto bg-neutral-50 border-2 border-dashed border-neutral-200 rounded-xl flex flex-col items-center justify-center relative overflow-hidden cursor-pointer hover:border-pink-500 transition-all shadow-xs" onclick="document.getElementById('storePhotoFile').click()">
+                            <div class="w-36 h-36 mx-auto bg-neutral-50 border-2 border-dashed border-neutral-200 rounded-xl flex flex-col items-center justify-center relative overflow-hidden cursor-pointer hover:border-pink-500 transition-all shadow-xs" onclick="document.getElementById('storePhotoFile').click()">
                                 <div id="storePhotoPlaceholder" class="flex flex-col items-center text-neutral-400 p-4 text-center"><i class="fa-solid fa-camera text-xl mb-1.5"></i><span class="text-[11px] font-medium">사진 선택</span></div>
                                 <img id="storePhotoPreview" src="" alt="Preview" class="absolute inset-0 w-full h-full object-cover hidden">
                             </div>
                             <input type="file" id="storePhotoFile" accept="image/*" onchange="handleImageUpload(event, 'storePhotoPreview', 'storePhotoPlaceholder')" class="hidden">
                         </div>
-                        <!-- STORE와 COLOR를 한 줄(Grid)로 묶음 -->
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                             <div>
                                 <label class="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">STORE</label>
@@ -691,7 +678,7 @@
                     <div class="space-y-3">
                         <div>
                             <label class="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">PHOTO</label>
-                            <div class="w-40 h-40 mx-auto bg-neutral-50 border border-neutral-200 rounded-xl overflow-hidden shadow-xs relative">
+                            <div class="w-36 h-36 mx-auto bg-neutral-50 border border-neutral-200 rounded-xl overflow-hidden shadow-xs relative">
                                 <img src="${esc(imgSrc(item.photo, 'MGWG'))}" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/400x400/f3f4f6/a3a3a3?text=MGWG'">
                             </div>
                         </div>
@@ -699,7 +686,6 @@
                             <label class="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">ITEM</label>
                             <div class="w-full px-3.5 py-2 bg-neutral-50 border border-neutral-200 rounded-xl text-xs font-semibold text-neutral-900">${esc(item.name)}</div>
                         </div>
-                        <!-- SORT와 STORE를 한 줄(Grid)로 묶음 -->
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                             <div>
                                 <label class="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">SORT</label>
@@ -744,7 +730,7 @@
                     <div class="space-y-3">
                         <div>
                             <label class="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">PHOTO</label>
-                            <div class="w-40 h-40 mx-auto bg-neutral-50 border border-neutral-200 rounded-xl overflow-hidden shadow-xs relative">
+                            <div class="w-36 h-36 mx-auto bg-neutral-50 border border-neutral-200 rounded-xl overflow-hidden shadow-xs relative">
                                 <img src="${sortObj.photo || 'https://placehold.co/400x400/f3f4f6/a3a3a3?text=SORT'}" class="w-full h-full object-cover">
                             </div>
                         </div>
@@ -790,11 +776,10 @@
                     <div class="space-y-3">
                         <div>
                             <label class="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">PHOTO</label>
-                            <div class="w-40 h-40 mx-auto bg-neutral-50 border border-neutral-200 rounded-xl overflow-hidden shadow-xs relative">
+                            <div class="w-36 h-36 mx-auto bg-neutral-50 border border-neutral-200 rounded-xl overflow-hidden shadow-xs relative">
                                 <img src="${storeObj.photo || 'https://placehold.co/400x400/f3f4f6/a3a3a3?text=STORE'}" class="w-full h-full object-cover">
                             </div>
                         </div>
-                        <!-- STORE와 COLOR를 한 줄(Grid)로 묶음 -->
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                             <div>
                                 <label class="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">STORE</label>
@@ -850,7 +835,7 @@
                     <form id="itemPanelForm" onsubmit="saveItem(event, 'ITEM')" class="space-y-3">
                         <div>
                             <label class="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">PHOTO</label>
-                            <div class="w-40 h-40 mx-auto bg-neutral-50 border-2 border-dashed border-neutral-200 rounded-xl flex flex-col items-center justify-center relative overflow-hidden cursor-pointer hover:border-pink-500 transition-all shadow-xs" onclick="document.getElementById('itemPhotoFile').click()">
+                            <div class="w-36 h-36 mx-auto bg-neutral-50 border-2 border-dashed border-neutral-200 rounded-xl flex flex-col items-center justify-center relative overflow-hidden cursor-pointer hover:border-pink-500 transition-all shadow-xs" onclick="document.getElementById('itemPhotoFile').click()">
                                 <div id="itemPhotoPlaceholder" class="flex flex-col items-center text-neutral-400 p-4 text-center ${item.photo ? 'hidden' : ''}"><i class="fa-solid fa-camera text-xl mb-1.5"></i><span class="text-[11px] font-medium">사진 선택</span></div>
                                 <img id="itemPhotoPreview" src="${esc(imgSrc(item.photo, 'MGWG'))}" alt="Preview" class="absolute inset-0 w-full h-full object-cover ${item.photo ? '' : 'hidden'}">
                             </div>
@@ -860,7 +845,6 @@
                             <label class="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">ITEM</label>
                             <input type="text" id="itemNameInput" required value="${esc(item.name)}" class="w-full px-3.5 py-2 bg-neutral-50 border border-neutral-200 rounded-xl text-xs focus:outline-none focus:border-pink-500">
                         </div>
-                        <!-- SORT와 STORE를 한 줄(Grid)로 묶음 -->
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                             <div>
                                 <div class="flex items-center justify-between mb-1">
@@ -875,7 +859,7 @@
                                     ${sorts.map(s => `
                                         <label class="flex items-center gap-2 text-xs text-neutral-700 cursor-pointer px-1 py-0.5 hover:bg-neutral-100 rounded">
                                             <input type="checkbox" name="itemSortCheckbox" value="${s.id}" ${item.sortIds && item.sortIds.includes(s.id) ? 'checked' : ''} class="rounded border-neutral-300 text-pink-600 focus:ring-pink-500">
-                                            <span>${esc(s.name)}</span>
+                                            <span class="truncate">${esc(s.name)}</span>
                                         </label>
                                     `).join('')}
                                 </div>
@@ -959,13 +943,12 @@
                     <form id="storePanelForm" onsubmit="saveMaster(event, 'STORE')" class="space-y-3">
                         <div>
                             <label class="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">PHOTO</label>
-                            <div class="w-40 h-40 mx-auto bg-neutral-50 border-2 border-dashed border-neutral-200 rounded-xl flex flex-col items-center justify-center relative overflow-hidden cursor-pointer hover:border-pink-500 transition-all shadow-xs" onclick="document.getElementById('storePhotoFile').click()">
+                            <div class="w-36 h-36 mx-auto bg-neutral-50 border-2 border-dashed border-neutral-200 rounded-xl flex flex-col items-center justify-center relative overflow-hidden cursor-pointer hover:border-pink-500 transition-all shadow-xs" onclick="document.getElementById('storePhotoFile').click()">
                                 <div id="storePhotoPlaceholder" class="flex flex-col items-center text-neutral-400 p-4 text-center ${storeObj.photo ? 'hidden' : ''}"><i class="fa-solid fa-camera text-xl mb-1.5"></i><span class="text-[11px] font-medium">사진 선택</span></div>
                                 <img id="storePhotoPreview" src="${storeObj.photo || ''}" alt="Preview" class="absolute inset-0 w-full h-full object-cover ${storeObj.photo ? '' : 'hidden'}">
                             </div>
                             <input type="file" id="storePhotoFile" accept="image/*" onchange="handleImageUpload(event, 'storePhotoPreview', 'storePhotoPlaceholder')" class="hidden">
                         </div>
-                        <!-- STORE와 COLOR를 한 줄(Grid)로 묶음 -->
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                             <div>
                                 <label class="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">STORE</label>
