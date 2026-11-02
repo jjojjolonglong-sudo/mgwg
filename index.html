@@ -594,7 +594,7 @@
                 itemEl.onclick = () => openDetailPanel('SORT', sortObj.id);
 
                 itemEl.innerHTML = `
-                    <img src="${sortObj.photo || 'https://placehold.co/400x400/f3f4f6/a3a3a3?text=SORT'}" alt="${esc(sortObj.name)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onerror="this.src='https://placehold.co/400x400/f3f4f6/a3a3a3?text=SORT'">
+                    <img src="${esc(imgSrc(sortObj.photo, 'SORT'))}" alt="${esc(sortObj.name)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onerror="this.src='https://placehold.co/400x400/f3f4f6/a3a3a3?text=SORT'">
                     <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent pt-6 pb-2.5 px-3 flex flex-col items-center text-center">
                         <p class="text-sm font-bold text-white tracking-wide truncate max-w-full">${esc(sortObj.name)}</p>
                     </div>
@@ -624,7 +624,7 @@
                 const badgeColor = storeObj.color || '#525252';
 
                 itemEl.innerHTML = `
-                    <img src="${storeObj.photo || 'https://placehold.co/400x400/f3f4f6/a3a3a3?text=STORE'}" alt="${esc(storeObj.name)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onerror="this.src='https://placehold.co/400x400/f3f4f6/a3a3a3?text=STORE'">
+                    <img src="${esc(imgSrc(storeObj.photo, 'STORE'))}" alt="${esc(storeObj.name)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onerror="this.src='https://placehold.co/400x400/f3f4f6/a3a3a3?text=STORE'">
                     <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent pt-6 pb-2.5 px-3 flex flex-col items-center text-center">
                         <span class="inline-block w-2.5 h-2.5 rounded-full mb-1 ring-1 ring-white/70 shadow-sm" style="background-color: ${badgeColor};"></span>
                         <p class="text-sm font-bold text-white tracking-wide truncate max-w-full">${esc(storeObj.name)}</p>
@@ -929,7 +929,7 @@
                         <div>
                             <label class="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">PHOTO</label>
                             <div class="w-28 h-28 lg:w-36 lg:h-36 mx-auto bg-neutral-50 border border-neutral-200 rounded-xl overflow-hidden shadow-xs relative">
-                                <img src="${sortObj.photo || 'https://placehold.co/400x400/f3f4f6/a3a3a3?text=SORT'}" class="w-full h-full object-cover">
+                                <img src="${esc(imgSrc(sortObj.photo, 'SORT'))}" class="w-full h-full object-cover">
                             </div>
                         </div>
                         <div>
@@ -975,7 +975,7 @@
                         <div>
                             <label class="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">PHOTO</label>
                             <div class="w-28 h-28 lg:w-36 lg:h-36 mx-auto bg-neutral-50 border border-neutral-200 rounded-xl overflow-hidden shadow-xs relative">
-                                <img src="${storeObj.photo || 'https://placehold.co/400x400/f3f4f6/a3a3a3?text=STORE'}" class="w-full h-full object-cover">
+                                <img src="${esc(imgSrc(storeObj.photo, 'STORE'))}" class="w-full h-full object-cover">
                             </div>
                         </div>
                         <div class="grid grid-cols-2 gap-2">
@@ -1143,7 +1143,7 @@
                             <label class="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">PHOTO</label>
                             <div class="w-28 h-28 lg:w-36 lg:h-36 mx-auto bg-neutral-50 border-2 border-dashed border-neutral-200 rounded-xl flex flex-col items-center justify-center relative overflow-hidden cursor-pointer hover:border-pink-500 transition-all shadow-xs" onclick="document.getElementById('storePhotoFile').click()">
                                 <div id="storePhotoPlaceholder" class="flex flex-col items-center text-neutral-400 p-4 text-center ${storeObj.photo ? 'hidden' : ''}"><i class="fa-solid fa-camera text-xl mb-1.5"></i><span class="text-[11px] font-medium">사진 선택</span></div>
-                                <img id="storePhotoPreview" src="${storeObj.photo || ''}" alt="Preview" class="absolute inset-0 w-full h-full object-cover ${storeObj.photo ? '' : 'hidden'}">
+                                <img id="storePhotoPreview" src="${esc(storeObj.photo ? imgSrc(storeObj.photo, 'STORE') : '')}" alt="Preview" class="absolute inset-0 w-full h-full object-cover ${storeObj.photo ? '' : 'hidden'}">
                             </div>
                             <input type="file" id="storePhotoFile" accept="image/*" onchange="handleImageUpload(event, 'storePhotoPreview', 'storePhotoPlaceholder')" class="hidden">
                         </div>
