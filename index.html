@@ -501,7 +501,7 @@
                 if (!r) return;
                 uploadedBase64Image = r.hash;
                 const preview = document.getElementById(previewId), placeholder = document.getElementById(placeholderId);
-                if (preview) { preview.src = r.preview || Media.url(r.hash); preview.classList.remove('hidden'); }
+                if (preview) { preview.src = Media.url(r.hash); preview.classList.remove('hidden'); }
                 if (placeholder) placeholder.classList.add('hidden');
             } catch (e) { alert('사진을 올리지 못했어요: ' + e.message); }
             finally { input.value = ''; }
