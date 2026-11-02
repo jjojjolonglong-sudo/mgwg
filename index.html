@@ -13,6 +13,8 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
     <link rel="icon" type="image/png" href="icon-192.png">
+    <script src="https://jjojjolonglong-sudo.github.io/mnmn/config.js"></script>
+    <script src="https://jjojjolonglong-sudo.github.io/mnmn/media.v1.js"></script>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts Inter -->
@@ -73,6 +75,11 @@
             .panel-foot { display: flex; gap: 0.5rem; margin-top: 0.75rem; }
             .panel-foot > button { flex: 1; padding: 0.625rem 0; font-size: 0.8125rem; border-radius: 0.75rem; }
         }
+        #cr-box{position:relative;width:fit-content;margin:10px auto;touch-action:none;user-select:none}
+        #cr-img{max-width:min(88vw,780px);max-height:60vh;display:block}
+        #cr-sel{position:absolute;border:2px solid #fff;box-shadow:0 0 0 9999px #0008;cursor:move}
+        #cr-rz{position:absolute;right:-9px;bottom:-9px;width:16px;height:16px;border-radius:50%;background:#db2777;border:2px solid #fff;cursor:nwse-resize}
+        dialog::backdrop{background:#0006}
     </style>
 </head>
 <body class="min-h-screen flex flex-col antialiased">
@@ -93,6 +100,10 @@
                 <button onclick="switchTab('SORT')" id="tabSort" class="px-4 py-1.5 rounded-lg text-xs font-medium text-neutral-500 hover:text-neutral-900 transition-all">SORT</button>
                 <button onclick="switchTab('STORE')" id="tabStore" class="px-4 py-1.5 rounded-lg text-xs font-medium text-neutral-500 hover:text-neutral-900 transition-all">STORE</button>
             </nav>
+            <div class="flex items-center gap-1">
+                <button id="migBtn" onclick="openMig()" class="hidden px-2 py-1.5 rounded-lg text-[11px] font-semibold bg-pink-50 text-pink-600 hover:bg-pink-100"><i class="fa-regular fa-images mr-1"></i><span id="migN"></span></button>
+                <button onclick="logout()" title="로그아웃" class="w-8 h-8 rounded-lg text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100 text-xs"><i class="fa-solid fa-right-from-bracket"></i></button>
+            </div>
         </div>
     </header>
 
@@ -196,60 +207,131 @@
     </main>
 
     <!-- JavaScript Application Logic -->
+    <!-- 로그인 -->
+    <div id="login" class="hidden fixed inset-0 z-50 bg-white flex items-center justify-center p-6">
+        <form id="loginForm" class="w-full max-w-xs space-y-3" onsubmit="return doLogin(event)">
+            <div class="text-xl font-bold text-neutral-900">MGWG</div>
+            <input id="lgEmail" type="email" autocomplete="username" required placeholder="이메일" class="w-full px-3.5 py-2 bg-neutral-50 border border-neutral-200 rounded-xl text-sm focus:outline-none focus:border-pink-500">
+            <input id="lgPw" type="password" autocomplete="current-password" required placeholder="비밀번호" class="w-full px-3.5 py-2 bg-neutral-50 border border-neutral-200 rounded-xl text-sm focus:outline-none focus:border-pink-500">
+            <button class="w-full py-2 rounded-xl bg-neutral-900 text-white text-sm font-semibold">로그인</button>
+            <p id="lgMsg" class="text-xs text-red-500"></p>
+        </form>
+    </div>
+    <!-- 썸네일 영역 선택 (원본에서 최소 200x200) -->
+    <dialog id="cr" class="rounded-2xl p-4 max-w-[94vw] w-[820px]">
+        <h3 class="text-sm font-bold mb-1">썸네일 영역 선택</h3>
+        <p class="text-[11px] text-neutral-500">정사각형 영역을 끌어서 옮기고, 오른쪽 아래 점으로 크기를 바꾸세요. 원본 기준 200×200보다 작게는 줄일 수 없어요.</p>
+        <div id="cr-box"><img id="cr-img" alt=""><div id="cr-sel"><i id="cr-rz"></i></div></div>
+        <p id="cr-info" class="text-[11px] text-neutral-500 text-center"></p>
+        <div class="flex justify-end gap-2 mt-3"><button type="button" id="cr-x" class="px-3 py-1.5 rounded-lg bg-neutral-100 text-xs">취소</button><button type="button" id="cr-ok" class="px-3 py-1.5 rounded-lg bg-neutral-900 text-white text-xs font-semibold">이 영역으로</button></div>
+    </dialog>
+    <!-- Drive 사진 옮기기 -->
+    <dialog id="mig" class="rounded-2xl p-4 max-w-[94vw] w-[560px]">
+        <h3 class="text-sm font-bold mb-1">Drive 사진 옮기기</h3>
+        <p class="text-[11px] text-neutral-500 mb-2">사진을 눌러 영역을 고르면 새 방식(200px 썸네일)으로 올리고, 같은 사진을 쓰던 아이템·분류·가게도 함께 바뀌어요. 불러오지 못하면 파일을 직접 고르세요.</p>
+        <div id="migList" class="grid grid-cols-3 sm:grid-cols-4 gap-2 max-h-[55vh] overflow-y-auto"></div>
+        <input type="file" id="migFile" accept="image/*" class="hidden">
+        <div class="flex justify-end mt-3"><button type="button" onclick="document.getElementById('mig').close()" class="px-3 py-1.5 rounded-lg bg-neutral-100 text-xs">닫기</button></div>
+    </dialog>
     <script>
-        const API_URL = 'https://script.google.com/macros/s/AKfycbwT-xZRjLQP8uBgH9v-0ZwtKTeA3iZ_qrnww1z_4kI7vSKbHYxGp-TJwCjDWiGt5-cnyw/exec';
+        const CFG = window.APP_CONFIG || {};
+        const SB = CFG.SB || 'https://rtvvajhsnwkkrmncyfbs.supabase.co';
+        const ANON = CFG.ANON || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ0dnZhamhzbndra3JtbmN5ZmJzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE0NjkwMTEsImV4cCI6MjEwNzA0NTAxMX0.O2aLLeazv_FhUhbVAkp4vz3pw8GPb_683dUu7Et1Cwk';
+        const todayKST = () => new Date(Date.now() + 9 * 36e5).toISOString().slice(0, 10);
 
         let items = [];
         let sorts = [];
         let stores = [];
 
         let currentEditingId = null;
-        let uploadedBase64Image = '';
+        let uploadedBase64Image = '';   // 이름은 그대로지만 지금은 사진 해시(16자) 또는 옛 Drive 주소가 들어가요
 
+        const HASH16 = /^[0-9a-f]{16}$/;
         const PLACEHOLDER = (label) => `https://placehold.co/400x400/f3f4f6/a3a3a3?text=${label}`;
-        const imgSrc = (url, label) => url || PLACEHOLDER(label);
+        const imgSrc = (p, label) => HASH16.test(p || '') ? (window.Media ? Media.url(p) : '') : (p || PLACEHOLDER(label));
+        const isLegacy = (p) => /^https?:/.test(p || '');
         const esc = (v) => String(v ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 
-        function normalizeItem(r) {
-            let sortIds = r.sortIds;
-            if (typeof sortIds === 'string') {
-                try { sortIds = JSON.parse(sortIds); } catch (e) { sortIds = sortIds ? [sortIds] : []; }
-            }
-            return {
-                id: String(r.id),
-                name: String(r.name ?? ''),
-                photo: r.photo || '',
-                sortIds: Array.isArray(sortIds) ? sortIds : [],
-                storeId: String(r.storeId || ''),
-                date: String(r.date || '').slice(0, 10),
-                order: r.order || '방문',
-                price: String(r.price ?? ''),
-                comment: String(r.comment ?? '')
-            };
+        /* ---------- 로그인 / REST ---------- */
+        let SES = null; try { SES = JSON.parse(localStorage.getItem('mgwg_ses') || 'null'); } catch (e) {}
+        const saveSes = (v) => { SES = v; try { v ? localStorage.setItem('mgwg_ses', JSON.stringify(v)) : localStorage.removeItem('mgwg_ses'); } catch (e) {} };
+        async function gotrue(grant, body) {
+            const r = await fetch(`${SB}/auth/v1/token?grant_type=${grant}`, { method: 'POST', headers: { apikey: ANON, 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+            const j = await r.json().catch(() => ({}));
+            if (!r.ok) throw new Error(j.error_description || j.msg || '로그인 실패');
+            j.expires_at = Date.now() + j.expires_in * 1000; return j;
         }
-        const normalizeSort = (s) => ({ id: String(s.id), name: String(s.name ?? ''), photo: s.photo || '' });
+        let rfP = null;
+        async function token() {
+            if (!SES) throw new Error('로그인이 필요해요');
+            if (SES.expires_at - Date.now() < 60000) { rfP = rfP || gotrue('refresh_token', { refresh_token: SES.refresh_token }).then(saveSes).finally(() => { rfP = null; }); await rfP; }
+            return SES.access_token;
+        }
+        if (window.Media) Media.init({ getToken: token });
+        async function rest(method, path, body, prefer) {
+            const r = await fetch(SB + '/rest/v1/' + path, { method, headers: { apikey: ANON, Authorization: 'Bearer ' + await token(), 'Content-Type': 'application/json', Prefer: prefer || 'return=minimal' }, body: body ? JSON.stringify(body) : undefined });
+            const t = await r.text(); let j = null; try { j = t ? JSON.parse(t) : null; } catch (e) {}
+            if (!r.ok) throw new Error((j && (j.message || j.error)) || ('HTTP ' + r.status));
+            return j;
+        }
+        async function getAll(table) {
+            const out = [];
+            for (let o = 0; ; o += 1000) { const p = await rest('GET', `${table}?select=*&order=created_at.asc&limit=1000&offset=${o}`, null, 'return=representation'); out.push(...p); if (p.length < 1000) break; }
+            return out;
+        }
+        async function doLogin(e) {
+            e.preventDefault();
+            document.getElementById('lgMsg').textContent = '';
+            try { saveSes(await gotrue('password', { email: document.getElementById('lgEmail').value.trim(), password: document.getElementById('lgPw').value })); showApp(); }
+            catch (err) { document.getElementById('lgMsg').textContent = err.message; }
+            return false;
+        }
+        function logout() { saveSes(null); showApp(); }
+        function showApp() {
+            document.getElementById('login').classList.toggle('hidden', !!SES);
+            if (SES) loadAllData();
+        }
+
+        /* ---------- 데이터 ---------- */
         const normalizeStore = (s) => ({ id: String(s.id), name: String(s.name ?? ''), color: s.color || '#0284c7', address: String(s.address ?? ''), photo: s.photo || '' });
+        const normalizeSort = (s) => ({ id: String(s.id), name: String(s.name ?? ''), photo: s.photo || '' });
+        const normalizeItem = (r, sortIds) => ({
+            id: String(r.id), name: String(r.name ?? ''), photo: r.photo || '', sortIds: sortIds || [],
+            storeId: String(r.store_id || ''), date: String(r.date || '').slice(0, 10), order: r.order_type || '방문',
+            price: String(r.price ?? ''), comment: String(r.comment ?? '')
+        });
+
+        let SNAP = { store: new Map(), sort: new Map(), item: new Map(), link: new Map() };   // 마지막으로 서버에 반영된 상태
+        const rowStore = (s) => ({ id: s.id, name: s.name, color: s.color || '#0284c7', address: s.address || null, photo: s.photo || null });
+        const rowSort = (s) => ({ id: s.id, name: s.name, photo: s.photo || null });
+        const rowItem = (r) => {
+            const digits = String(r.price ?? '').replace(/[^0-9]/g, '');
+            return { id: r.id, name: r.name, photo: r.photo || null, store_id: stores.some(s => s.id === r.storeId) ? r.storeId : null,
+                date: r.date || null, order_type: r.order || '방문', price: digits ? parseInt(digits, 10) : null, comment: r.comment || null };
+        };
+        const linkKey = (r) => r.sortIds.filter(id => sorts.some(s => s.id === id)).slice().sort().join(',');
+        function takeSnap() {
+            SNAP = { store: new Map(stores.map(s => [s.id, JSON.stringify(rowStore(s))])), sort: new Map(sorts.map(s => [s.id, JSON.stringify(rowSort(s))])),
+                item: new Map(items.map(r => [r.id, JSON.stringify(rowItem(r))])), link: new Map(items.map(r => [r.id, linkKey(r)])) };
+        }
 
         async function loadAllData() {
             try {
-                const res = await fetch(API_URL);
-                const data = await res.json();
-                if (data.status === 'error') throw new Error(data.message);
-
-                items = (data.items || []).filter(r => r.id).map(normalizeItem);
-                sorts = (data.sorts || []).filter(s => s.id).map(normalizeSort);
-                stores = (data.stores || []).filter(s => s.id).map(normalizeStore);
-
+                const [st, so, it, ln] = await Promise.all([getAll('mgwg_store'), getAll('mgwg_sort'), getAll('mgwg_item'), rest('GET', 'mgwg_item_sort?select=item_id,sort_id&limit=10000', null, 'return=representation')]);
+                const byItem = new Map();
+                ln.forEach(l => { const k = String(l.item_id); (byItem.get(k) || byItem.set(k, []).get(k)).push(String(l.sort_id)); });
+                stores = st.map(normalizeStore);
+                sorts = so.map(normalizeSort);
+                items = it.map(r => normalizeItem(r, byItem.get(String(r.id))));
                 items.sort((a, b) => new Date(b.date) - new Date(a.date));
                 sorts.sort((a, b) => a.name.localeCompare(b.name, 'ko'));
                 sortStoresByRecentItem();
-
-                renderItems();
-                renderSorts();
-                renderStores();
+                takeSnap();
+                renderItems(); renderSorts(); renderStores(); updateMigBtn();
             } catch (err) {
                 console.error("데이터 로드 실패:", err);
-                alert("스프레드시트에서 데이터를 불러오지 못했습니다.");
+                if (!SES) return;
+                alert("데이터를 불러오지 못했습니다: " + err.message);
             }
         }
 
@@ -257,32 +339,36 @@
         function syncData() {
             syncQueue = syncQueue.then(doSync).catch(err => {
                 console.error("데이터 동기화 실패:", err);
-                alert("스프레드시트 저장에 실패했습니다.");
+                alert("저장에 실패했습니다: " + err.message);
             });
             return syncQueue;
         }
 
+        // 바뀐 행만 보내요: 가게·분류 → 아이템 → 아이템-분류 연결, 삭제는 아이템부터
         async function doSync() {
-            const res = await fetch(API_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                body: JSON.stringify({ action: 'sync', items, sorts, stores })
-            });
-            const result = await res.json();
-            if (result.status !== 'success') throw new Error(result.message || 'sync error');
-            applyUploadedPhotos(result.photos || {});
+            const up = (table, list, map, rowFn) => {
+                const rows = list.map(rowFn).filter(r => map.get(r.id) !== JSON.stringify(r));
+                return rows.length ? rest('POST', table + '?on_conflict=id', rows, 'resolution=merge-duplicates,return=minimal').then(() => rows.forEach(r => map.set(r.id, JSON.stringify(r)))) : null;
+            };
+            const inList = (ids) => 'in.(' + ids.join(',') + ')';
+            const delIds = (map, list) => [...map.keys()].filter(id => !list.some(x => x.id === id));
+            const dItems = delIds(SNAP.item, items), dSorts = delIds(SNAP.sort, sorts), dStores = delIds(SNAP.store, stores);
+            if (dItems.length) { await rest('DELETE', 'mgwg_item?id=' + inList(dItems)); dItems.forEach(id => { SNAP.item.delete(id); SNAP.link.delete(id); }); }
+            if (dSorts.length) { await rest('DELETE', 'mgwg_sort?id=' + inList(dSorts)); dSorts.forEach(id => SNAP.sort.delete(id)); }
+            if (dStores.length) { await rest('DELETE', 'mgwg_store?id=' + inList(dStores)); dStores.forEach(id => SNAP.store.delete(id)); }
+            await up('mgwg_store', stores, SNAP.store, rowStore);
+            await up('mgwg_sort', sorts, SNAP.sort, rowSort);
+            await up('mgwg_item', items, SNAP.item, rowItem);
+            const changed = items.filter(r => SNAP.link.get(r.id) !== linkKey(r));
+            if (changed.length) {
+                await rest('DELETE', 'mgwg_item_sort?item_id=' + inList(changed.map(r => r.id)));
+                const pairs = changed.flatMap(r => r.sortIds.filter(id => sorts.some(s => s.id === id)).map(sid => ({ item_id: r.id, sort_id: sid })));
+                if (pairs.length) await rest('POST', 'mgwg_item_sort', pairs);
+                changed.forEach(r => SNAP.link.set(r.id, linkKey(r)));
+            }
         }
 
-        function applyUploadedPhotos(photos) {
-            [[items, 'items'], [sorts, 'sorts'], [stores, 'stores']].forEach(([list, key]) => {
-                const map = photos[key] || {};
-                list.forEach(o => {
-                    if (map[o.id] && String(o.photo).startsWith('data:')) o.photo = map[o.id];
-                });
-            });
-        }
-
-        window.onload = loadAllData;
+        window.onload = () => { showApp(); };
 
         if ('serviceWorker' in navigator && location.protocol === 'https:') {
             navigator.serviceWorker.register('sw.js').catch(() => {});
@@ -356,31 +442,106 @@
             uploadedBase64Image = '';
         }
 
-        const THUMB_SIZE = 400;
-        function handleImageUpload(event, previewId, placeholderId) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const img = new Image();
-                img.onload = function() {
-                    const side = Math.min(img.width, img.height);
-                    const sx = (img.width - side) / 2;
-                    const sy = (img.height - side) / 2;
-                    const canvas = document.createElement('canvas');
-                    canvas.width = canvas.height = THUMB_SIZE;
-                    canvas.getContext('2d').drawImage(img, sx, sy, side, side, 0, 0, THUMB_SIZE, THUMB_SIZE);
-                    uploadedBase64Image = canvas.toDataURL('image/jpeg', 0.85);
-                    const preview = document.getElementById(previewId);
-                    const placeholder = document.getElementById(placeholderId);
-                    if (preview) { preview.src = uploadedBase64Image; preview.classList.remove('hidden'); }
-                    if (placeholder) { placeholder.classList.add('hidden'); }
+        const MIN_PX = 200;
+        // 정사각형 영역 선택. 원본 기준 200x200 아래로는 줄어들지 않게 막아요.
+        function cropPick(file) {
+            return new Promise(resolve => {
+                const dlg = document.getElementById('cr'), img = document.getElementById('cr-img'), sel = document.getElementById('cr-sel'), box = document.getElementById('cr-box'), info = document.getElementById('cr-info');
+                const url = URL.createObjectURL(file); let q = { x: 0, y: 0, s: 0 }, nat = { w: 0, h: 0 };
+                const k = () => nat.w / img.clientWidth;
+                const minS = () => MIN_PX / k();
+                const done = (r) => { dlg.oncancel = null; URL.revokeObjectURL(url); if (dlg.open) dlg.close(); resolve(r); };
+                const paint = () => { sel.style.cssText = `left:${q.x}px;top:${q.y}px;width:${q.s}px;height:${q.s}px`; info.textContent = `선택 영역 ${Math.round(q.s * k())}px (최소 ${MIN_PX}px)`; };
+                const clamp = () => { const W = img.clientWidth, H = img.clientHeight; q.s = Math.max(minS(), Math.min(q.s, W, H)); q.x = Math.max(0, Math.min(q.x, W - q.s)); q.y = Math.max(0, Math.min(q.y, H - q.s)); };
+                img.onload = () => {
+                    nat = { w: img.naturalWidth, h: img.naturalHeight };
+                    if (Math.min(nat.w, nat.h) < MIN_PX) { alert(`사진이 너무 작아요. 가로·세로 모두 ${MIN_PX}px 이상이어야 해요. (현재 ${nat.w}×${nat.h})`); done(null); return; }
+                    const W = img.clientWidth, H = img.clientHeight, s0 = Math.max(minS(), Math.min(W, H) * 0.7);
+                    q = { x: (W - s0) / 2, y: Math.max(0, (H - s0) * 0.25), s: s0 }; clamp(); paint();
                 };
-                img.onerror = () => alert('이 이미지 형식은 읽을 수 없습니다.');
-                img.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
+                box.onpointerdown = (ev) => {
+                    const rz = ev.target.id === 'cr-rz'; if (!rz && ev.target.id !== 'cr-sel') return;
+                    ev.preventDefault();
+                    const x0 = q.x, y0 = q.y, s0 = q.s, cx = ev.clientX, cy = ev.clientY, W = img.clientWidth, H = img.clientHeight;
+                    const mv = (m) => {
+                        const dx = m.clientX - cx, dy = m.clientY - cy;
+                        if (rz) q.s = Math.max(minS(), Math.min(s0 + Math.max(dx, dy), W - q.x, H - q.y));
+                        else { q.x = Math.max(0, Math.min(x0 + dx, W - q.s)); q.y = Math.max(0, Math.min(y0 + dy, H - q.s)); }
+                        paint();
+                    };
+                    const up = () => { document.removeEventListener('pointermove', mv); document.removeEventListener('pointerup', up); document.removeEventListener('pointercancel', up); };
+                    document.addEventListener('pointermove', mv); document.addEventListener('pointerup', up); document.addEventListener('pointercancel', up);
+                };
+                document.getElementById('cr-x').onclick = () => done(null);
+                dlg.oncancel = () => done(null);
+                document.getElementById('cr-ok').onclick = async () => {
+                    try {
+                        const bmp = await createImageBitmap(file, { imageOrientation: 'from-image' }), kk = bmp.width / img.clientWidth;
+                        const sz = Math.max(MIN_PX, Math.round(q.s * kk)), c = document.createElement('canvas'); c.width = c.height = sz;
+                        const sw = Math.min(q.s * kk, bmp.width - q.x * kk, bmp.height - q.y * kk);
+                        c.getContext('2d').drawImage(bmp, q.x * kk, q.y * kk, sw, sw, 0, 0, sz, sz); bmp.close();
+                        const blob = await new Promise(r => c.toBlob(r, 'image/jpeg', 0.95));
+                        done(new File([blob], 'crop.jpg', { type: 'image/jpeg' }));
+                    } catch (e) { alert('이미지를 읽을 수 없어요.'); done(null); }
+                };
+                img.src = url; dlg.showModal();
+            });
         }
+        // 자른 영역을 세로 200px WebP로 올리고 해시를 돌려줘요
+        async function uploadCrop(file) {
+            const c = await cropPick(file); if (!c) return null;
+            const p = await Media.process(c);
+            try { return { hash: await Media.upload(p), preview: p.previewUrl }; } finally { p.close && p.close(); }
+        }
+        async function handleImageUpload(event, previewId, placeholderId) {
+            const input = event.target, file = input.files[0];
+            if (!file) return;
+            try {
+                const r = await uploadCrop(file);
+                if (!r) return;
+                uploadedBase64Image = r.hash;
+                const preview = document.getElementById(previewId), placeholder = document.getElementById(placeholderId);
+                if (preview) { preview.src = r.preview || Media.url(r.hash); preview.classList.remove('hidden'); }
+                if (placeholder) placeholder.classList.add('hidden');
+            } catch (e) { alert('사진을 올리지 못했어요: ' + e.message); }
+            finally { input.value = ''; }
+        }
+
+        /* ---------- Drive 사진 옮기기 ---------- */
+        const legacyPhotos = () => {
+            const m = new Map();
+            const add = (p, who) => { if (isLegacy(p)) (m.get(p) || m.set(p, []).get(p)).push(who); };
+            items.forEach(r => add(r.photo, r.name)); sorts.forEach(r => add(r.photo, '분류 ' + r.name)); stores.forEach(r => add(r.photo, '가게 ' + r.name));
+            return m;
+        };
+        function updateMigBtn() {
+            const n = legacyPhotos().size, b = document.getElementById('migBtn');
+            b.classList.toggle('hidden', n === 0); document.getElementById('migN').textContent = `사진 옮기기 ${n}`;
+        }
+        function openMig() {
+            const m = legacyPhotos(), list = document.getElementById('migList');
+            list.innerHTML = [...m].map(([url, who]) => `<button type="button" data-url="${esc(url)}" class="text-left"><div class="aspect-square rounded-lg overflow-hidden bg-neutral-100"><img src="${esc(url)}" class="w-full h-full object-cover" loading="lazy" referrerpolicy="no-referrer"></div><div class="text-[10px] text-neutral-500 truncate mt-0.5">${esc(who[0])}${who.length > 1 ? ' 외 ' + (who.length - 1) : ''}</div></button>`).join('') || '<p class="text-xs text-neutral-500 col-span-full py-6 text-center">옮길 사진이 없어요 🎉</p>';
+            const dlg = document.getElementById('mig'); if (!dlg.open) dlg.showModal();
+        }
+        document.addEventListener('click', async (e) => {
+            const b = e.target.closest('#migList button[data-url]'); if (!b) return;
+            const url = b.dataset.url; let file = null;
+            try { const r = await fetch(url, { mode: 'cors' }); if (!r.ok) throw 0; const bl = await r.blob(); file = new File([bl], 'drive.jpg', { type: bl.type || 'image/jpeg' }); } catch (err) { file = null; }
+            if (!file) {
+                alert('Drive에서 바로 불러오지 못했어요. 이 사진의 파일을 직접 골라 주세요.');
+                file = await new Promise(res => { const inp = document.getElementById('migFile'); inp.value = ''; inp.onchange = () => res(inp.files[0] || null); inp.click(); });
+                if (!file) return;
+            }
+            document.getElementById('mig').close();
+            try {
+                const r = await uploadCrop(file);
+                if (r) {
+                    [items, sorts, stores].forEach(list => list.forEach(o => { if (o.photo === url) o.photo = r.hash; }));
+                    await syncData(); renderItems(); renderSorts(); renderStores(); updateMigBtn();
+                }
+            } catch (err) { alert('옮기지 못했어요: ' + err.message); }
+            openMig();
+        });
 
         function renderItems() {
             document.getElementById('itemCountSubtitle').innerText = `${items.length} items`;
@@ -486,7 +647,7 @@
             const name = input.value.trim();
             if(!name) return;
 
-            const newId = 'sort_' + Date.now();
+            const newId = crypto.randomUUID();
             sorts.push({ id: newId, name: name, photo: '' });
             sorts.sort((a, b) => a.name.localeCompare(b.name, 'ko'));
             
@@ -525,7 +686,7 @@
             const name = input.value.trim();
             if(!name) return;
 
-            const newId = 'store_' + Date.now();
+            const newId = crypto.randomUUID();
             stores.push({ id: newId, name: name, color: '#0284c7', address: '', photo: '' });
             sortStoresByRecentItem();
             
@@ -599,7 +760,7 @@
                         <div class="grid grid-cols-3 gap-2">
                             <div>
                                 <label class="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">DATE</label>
-                                <input type="date" id="itemDateInput" required value="${new Date().toISOString().split('T')[0]}" class="w-full px-2 py-2 bg-neutral-50 border border-neutral-200 rounded-xl text-[11px]">
+                                <input type="date" id="itemDateInput" required value="${todayKST()}" class="w-full px-2 py-2 bg-neutral-50 border border-neutral-200 rounded-xl text-[11px]">
                             </div>
                             <div>
                                 <label class="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">ORDER</label>
@@ -1013,7 +1174,7 @@
             const selectedSortIds = Array.from(document.querySelectorAll('input[name="itemSortCheckbox"]:checked')).map(cb => cb.value);
 
             const itemData = {
-                id: currentEditingId || 'item_' + Date.now(),
+                id: currentEditingId || crypto.randomUUID(),
                 name: document.getElementById('itemNameInput').value.trim(),
                 photo: uploadedBase64Image || '',
                 sortIds: selectedSortIds,
@@ -1047,7 +1208,7 @@
                     const obj = sorts.find(s => s.id === currentEditingId);
                     if (obj) { obj.name = name; obj.photo = photo; }
                 } else {
-                    const newObj = { id: 'sort_' + Date.now(), name, photo };
+                    const newObj = { id: crypto.randomUUID(), name, photo };
                     sorts.push(newObj);
                     currentEditingId = newObj.id;
                 }
@@ -1066,7 +1227,7 @@
                     const obj = stores.find(s => s.id === currentEditingId);
                     if (obj) { obj.name = name; obj.color = color; obj.address = address; if (photo) obj.photo = photo; }
                 } else {
-                    const newObj = { id: 'store_' + Date.now(), name, color, address, photo };
+                    const newObj = { id: crypto.randomUUID(), name, color, address, photo };
                     stores.push(newObj);
                     currentEditingId = newObj.id;
                 }
