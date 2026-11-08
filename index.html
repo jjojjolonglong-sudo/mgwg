@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MGWG - 마구와구 먹은 기록</title>
+    <script src="https://jjojjolonglong-sudo.github.io/mnmn/fonts.v1.js" data-app="mgwg"></script>
     <!-- 앱 설치(PWA) 설정 -->
     <link rel="manifest" href="manifest.webmanifest">
     <meta name="theme-color" content="#ffffff">
@@ -14,7 +15,7 @@
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
     <link rel="icon" type="image/png" href="icon-192.png">
     <script src="https://jjojjolonglong-sudo.github.io/mnmn/config.js"></script>
-    <script src="https://jjojjolonglong-sudo.github.io/mnmn/media.v1.js"></script>
+    <script src="https://jjojjolonglong-sudo.github.io/mnmn/media.v2.js"></script>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts Inter -->
@@ -23,7 +24,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         html, body {
-            overscroll-behavior-y: none; /* 1. 스크롤 텐션/바운스 현상 완전 제거 */
+            overscroll-behavior: none; /* 스크롤 끝 텐션(바운스)·당겨서 새로고침 막기 */
             -webkit-overflow-scrolling: touch;
         }
         body {
@@ -59,10 +60,8 @@
         @media (max-width: 1023px) {
             /* 디테일이 열리면 이미지 목록 숨김 */
             body.panel-open .list-col { display: none; }
-            body.panel-open main { padding-top: 0.25rem; padding-bottom: 0.5rem; }
-            body.panel-open .sub-head { padding-top: 0.375rem; padding-bottom: 0.375rem; margin-bottom: 0.25rem; }
-            body.panel-open .sub-head p { display: none; }
             body.panel-open [id$="SidePanel"] { margin-bottom: 0; }
+            .side-col:has(> .hidden) { display: none; } /* 패널이 닫혀 있으면 빈 칸 여백도 없애기 */
 
             .panel-card { padding: 0.25rem 0.875rem 0.875rem; }
             /* 제목 가운데 정렬 + 위 여백 축소 */
@@ -80,6 +79,12 @@
         #cr-sel{position:absolute;border:2px solid #fff;box-shadow:0 0 0 9999px #0008;cursor:move}
         #cr-rz{position:absolute;right:-9px;bottom:-9px;width:16px;height:16px;border-radius:50%;background:#db2777;border:2px solid #fff;cursor:nwse-resize}
         dialog::backdrop{background:#0006}
+        /* 상단(로고줄 64 + 탭줄 44 + 선 1) 고정, 제목줄은 그 바로 아래 고정 */
+        .sub-head{top:109px;height:68px;display:flex;align-items:center}
+        .sub-head>div{width:100%}
+        .side-col{top:189px}
+        .tabbtn{flex:1;height:32px;border-radius:.5rem;font-size:.75rem;font-weight:500;color:#737373}
+        .tabbtn.on{background:#fff;color:#171717;font-weight:600;box-shadow:0 1px 2px #0000000f}
     </style>
 </head>
 <body class="min-h-screen flex flex-col antialiased">
@@ -94,25 +99,27 @@
                 <span class="text-xl font-bold tracking-tight text-neutral-900">MGWG</span>
             </div>
 
-            <!-- Tab Navigation (항상 클릭 가능) -->
-            <nav class="flex space-x-1 bg-neutral-100 p-1 rounded-xl">
-                <button onclick="switchTab('ITEM')" id="tabItem" class="px-4 py-1.5 rounded-lg text-xs font-semibold bg-white text-neutral-900 shadow-xs transition-all">ITEM</button>
-                <button onclick="switchTab('SORT')" id="tabSort" class="px-4 py-1.5 rounded-lg text-xs font-medium text-neutral-500 hover:text-neutral-900 transition-all">SORT</button>
-                <button onclick="switchTab('STORE')" id="tabStore" class="px-4 py-1.5 rounded-lg text-xs font-medium text-neutral-500 hover:text-neutral-900 transition-all">STORE</button>
-            </nav>
             <div class="flex items-center gap-1">
                 <button id="migBtn" onclick="openMig()" class="hidden px-2 py-1.5 rounded-lg text-[11px] font-semibold bg-pink-50 text-pink-600 hover:bg-pink-100"><i class="fa-regular fa-images mr-1"></i><span id="migN"></span></button>
+                <button onclick="location.reload()" title="새로고침" class="w-8 h-8 rounded-lg text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100 text-xs"><i class="fa-solid fa-rotate-right"></i></button>
                 <button onclick="logout()" title="로그아웃" class="w-8 h-8 rounded-lg text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100 text-xs"><i class="fa-solid fa-right-from-bracket"></i></button>
             </div>
+        </div>
+        <div class="max-w-5xl mx-auto px-4 h-11">
+            <nav class="max-w-4xl mx-auto flex gap-1 bg-neutral-100 p-1 rounded-xl">
+                <button onclick="switchTab('ITEM')" id="tabItem" class="tabbtn on">ITEM</button>
+                <button onclick="switchTab('SORT')" id="tabSort" class="tabbtn">SORT</button>
+                <button onclick="switchTab('STORE')" id="tabStore" class="tabbtn">STORE</button>
+            </nav>
         </div>
     </header>
 
     <!-- Main Content Area -->
-    <main class="flex-1 max-w-5xl w-full mx-auto px-4 py-6">
+    <main class="flex-1 max-w-5xl w-full mx-auto px-4 pb-6">
 
         <!-- ==================== ITEM TAB VIEW ==================== -->
         <div id="viewItem" class="tab-view">
-            <div class="sub-head sticky top-16 z-20 bg-neutral-50 -mx-4 px-4 py-3 mb-3">
+            <div class="sub-head sticky z-20 bg-neutral-50 -mx-4 px-4 mb-3">
                 <div class="flex items-center justify-between max-w-4xl mx-auto">
                     <div>
                         <h1 class="text-lg font-bold text-neutral-900">마구와구 먹은 기록</h1>
@@ -136,7 +143,7 @@
                         <p class="text-xs text-neutral-500 mt-1">상단의 'ITEM 추가' 버튼을 눌러 첫 미식 기록을 남겨보세요!</p>
                     </div>
                 </div>
-                <div class="order-1 lg:order-2 w-full max-w-[600px] mx-auto lg:sticky lg:top-[8.5rem]">
+                <div class="order-1 lg:order-2 w-full max-w-[600px] mx-auto side-col lg:sticky">
                     <div id="itemSidePanel" class="hidden w-full max-w-[600px] mx-auto mb-6"></div>
                 </div>
             </div>
@@ -144,7 +151,7 @@
 
         <!-- ==================== SORT TAB VIEW ==================== -->
         <div id="viewSort" class="tab-view hidden">
-            <div class="sub-head sticky top-16 z-20 bg-neutral-50 -mx-4 px-4 py-3 mb-3">
+            <div class="sub-head sticky z-20 bg-neutral-50 -mx-4 px-4 mb-3">
                 <div class="flex items-center justify-between max-w-4xl mx-auto">
                     <div>
                         <h1 class="text-lg font-bold text-neutral-900">마구와구 먹은 메뉴</h1>
@@ -167,7 +174,7 @@
                         <p class="text-xs text-neutral-500 mt-1">상단의 'SORT 추가' 버튼을 눌러 분류를 만들어보세요!</p>
                     </div>
                 </div>
-                <div class="order-1 lg:order-2 w-full max-w-[600px] mx-auto lg:sticky lg:top-[8.5rem]">
+                <div class="order-1 lg:order-2 w-full max-w-[600px] mx-auto side-col lg:sticky">
                     <div id="sortSidePanel" class="hidden w-full max-w-[600px] mx-auto mb-6"></div>
                 </div>
             </div>
@@ -175,7 +182,7 @@
 
         <!-- ==================== STORE TAB VIEW ==================== -->
         <div id="viewStore" class="tab-view hidden">
-            <div class="sub-head sticky top-16 z-20 bg-neutral-50 -mx-4 px-4 py-3 mb-3">
+            <div class="sub-head sticky z-20 bg-neutral-50 -mx-4 px-4 mb-3">
                 <div class="flex items-center justify-between max-w-4xl mx-auto">
                     <div>
                         <h1 class="text-lg font-bold text-neutral-900">마구와구 먹은 가게</h1>
@@ -198,7 +205,7 @@
                         <p class="text-xs text-neutral-500 mt-1">상단의 'STORE 추가' 버튼을 눌러 가게를 등록해보세요!</p>
                     </div>
                 </div>
-                <div class="order-1 lg:order-2 w-full max-w-[600px] mx-auto lg:sticky lg:top-[8.5rem]">
+                <div class="order-1 lg:order-2 w-full max-w-[600px] mx-auto side-col lg:sticky">
                     <div id="storeSidePanel" class="hidden w-full max-w-[600px] mx-auto mb-6"></div>
                 </div>
             </div>
@@ -267,7 +274,7 @@
             if (SES.expires_at - Date.now() < 60000) { rfP = rfP || gotrue('refresh_token', { refresh_token: SES.refresh_token }).then(saveSes).finally(() => { rfP = null; }); await rfP; }
             return SES.access_token;
         }
-        if (window.Media) Media.init({ getToken: token });
+        if (window.Media) Media.init({ app: 'mgwg', getToken: token });
         async function rest(method, path, body, prefer) {
             const r = await fetch(SB + '/rest/v1/' + path, { method, headers: { apikey: ANON, Authorization: 'Bearer ' + await token(), 'Content-Type': 'application/json', Prefer: prefer || 'return=minimal' }, body: body ? JSON.stringify(body) : undefined });
             const t = await r.text(); let j = null; try { j = t ? JSON.parse(t) : null; } catch (e) {}
@@ -393,45 +400,45 @@
 
         function switchTab(tabName) {
             document.querySelectorAll('.tab-view').forEach(el => el.classList.add('hidden'));
-            document.getElementById('tabItem').className = "px-4 py-1.5 rounded-lg text-xs font-medium text-neutral-500 hover:text-neutral-900 transition-all bg-transparent shadow-none";
-            document.getElementById('tabSort').className = "px-4 py-1.5 rounded-lg text-xs font-medium text-neutral-500 hover:text-neutral-900 transition-all bg-transparent shadow-none";
-            document.getElementById('tabStore').className = "px-4 py-1.5 rounded-lg text-xs font-medium text-neutral-500 hover:text-neutral-900 transition-all bg-transparent shadow-none";
+            document.getElementById('tabItem').classList.remove('on');
+            document.getElementById('tabSort').classList.remove('on');
+            document.getElementById('tabStore').classList.remove('on');
 
             closeAllSidePanels();
             panelScrollY = 0;
 
             if (tabName === 'ITEM') {
                 document.getElementById('viewItem').classList.remove('hidden');
-                document.getElementById('tabItem').className = "px-4 py-1.5 rounded-lg text-xs font-semibold bg-white text-neutral-900 shadow-xs transition-all";
+                document.getElementById('tabItem').classList.add('on');
                 renderItems();
             } else if (tabName === 'SORT') {
                 document.getElementById('viewSort').classList.remove('hidden');
-                document.getElementById('tabSort').className = "px-4 py-1.5 rounded-lg text-xs font-semibold bg-white text-neutral-900 shadow-xs transition-all";
+                document.getElementById('tabSort').classList.add('on');
                 renderSorts();
             } else if (tabName === 'STORE') {
                 document.getElementById('viewStore').classList.remove('hidden');
-                document.getElementById('tabStore').className = "px-4 py-1.5 rounded-lg text-xs font-semibold bg-white text-neutral-900 shadow-xs transition-all";
+                document.getElementById('tabStore').classList.add('on');
                 renderStores();
             }
         }
 
-        // 헤더: 모바일에서는 제목 가운데 정렬 + 우측 X만 노출, 액션 버튼은 하단(panel-foot)으로 이동
+        // 패널 제목줄(가운데 제목만). 버튼은 하단(panel-foot)에 두고 맨 끝에 BACK을 붙여요
+        // BACK: 편집 화면 → 상세 화면으로, 추가·상세 화면 → 패널 닫기
         let lastPanelActions = '';
         function panelHeader(title, actionsHtml) {
-            lastPanelActions = actionsHtml || '';
+            const [ty, mode] = title.split(' ');
+            const back = mode === 'EDIT' && currentEditingId ? `openDetailPanel('${ty}', '${currentEditingId}')` : 'closeAllSidePanels()';
+            lastPanelActions = (actionsHtml || '') + `<button type="button" onclick="${back}" class="px-3 py-1.5 bg-neutral-100 hover:bg-neutral-200 text-neutral-600 font-semibold rounded-lg text-[11px]">BACK</button>`;
             return `
                 <div class="panel-head">
                     <h2 class="panel-title text-sm font-bold text-neutral-900 truncate">${title}</h2>
-                    <div class="flex items-center gap-1.5 shrink-0">
-                        <button type="button" onclick="closeAllSidePanels()" class="w-7 h-7 rounded-full bg-neutral-100 hover:bg-neutral-200 text-neutral-600 flex items-center justify-center text-xs"><i class="fa-solid fa-xmark"></i></button>
-                    </div>
                 </div>`;
         }
 
         function panelWrapper(contentHtml) {
             const foot = lastPanelActions ? `<div class="panel-foot">${lastPanelActions}</div>` : '';
             lastPanelActions = '';
-            return `<div class="panel-card bg-white rounded-xl border border-neutral-200 shadow-sm w-full max-w-lg lg:max-h-[calc(100vh-10.5rem)] lg:overflow-y-auto relative">${contentHtml}${foot}</div>`;
+            return `<div class="panel-card bg-white rounded-xl border border-neutral-200 shadow-sm w-full max-w-lg lg:max-h-[calc(100vh-205px)] lg:overflow-y-auto relative">${contentHtml}${foot}</div>`;
         }
 
         function closeAllSidePanels() {
