@@ -15,7 +15,8 @@
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
     <link rel="icon" type="image/png" href="icon-192.png">
     <script src="https://jjojjolonglong-sudo.github.io/mnmn/config.js"></script>
-    <script src="https://jjojjolonglong-sudo.github.io/mnmn/media.v2.js"></script>
+<script src="https://jjojjolonglong-sudo.github.io/mnmn/core.v1.js" data-app="mgwg"></script>
+    <script src="https://jjojjolonglong-sudo.github.io/mnmn/media.js"></script>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts Inter -->
@@ -260,8 +261,8 @@
         const esc = (v) => String(v ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 
         /* ---------- 로그인 / REST ---------- */
-        let SES = null; try { SES = JSON.parse(localStorage.getItem('mgwg_ses') || 'null'); } catch (e) {}
-        const saveSes = (v) => { SES = v; try { v ? localStorage.setItem('mgwg_ses', JSON.stringify(v)) : localStorage.removeItem('mgwg_ses'); } catch (e) {} };
+        let SES = null; try { SES = JSON.parse(localStorage.getItem('jjojjo_ses') || 'null'); } catch (e) {}
+        const saveSes = (v) => { SES = v; try { v ? localStorage.setItem('jjojjo_ses', JSON.stringify(v)) : localStorage.removeItem('jjojjo_ses'); } catch (e) {} };
         async function gotrue(grant, body) {
             const r = await fetch(`${SB}/auth/v1/token?grant_type=${grant}`, { method: 'POST', headers: { apikey: ANON, 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
             const j = await r.json().catch(() => ({}));
@@ -270,7 +271,7 @@
         }
         let rfP = null;
         async function token() {
-            if (!SES) throw new Error('로그인이 필요해요');
+            try{SES=JSON.parse(localStorage.getItem('jjojjo_ses')||'null')}catch(e){}if (!SES) throw new Error('로그인이 필요해요');
             if (SES.expires_at - Date.now() < 60000) { rfP = rfP || gotrue('refresh_token', { refresh_token: SES.refresh_token }).then(saveSes).finally(() => { rfP = null; }); await rfP; }
             return SES.access_token;
         }
