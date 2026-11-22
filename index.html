@@ -17,6 +17,7 @@
     <script src="https://jjojjolonglong-sudo.github.io/mnmn/config.js"></script>
 <script src="https://jjojjolonglong-sudo.github.io/mnmn/core.v1.js" data-app="mgwg"></script>
     <script src="https://jjojjolonglong-sudo.github.io/mnmn/media.js"></script>
+    <script src="https://jjojjolonglong-sudo.github.io/mnmn/pick.v1.js"></script>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts Inter -->
@@ -102,6 +103,7 @@
 
             <div class="flex items-center gap-1">
                 <button id="migBtn" onclick="openMig()" class="hidden px-2 py-1.5 rounded-lg text-[11px] font-semibold bg-pink-50 text-pink-600 hover:bg-pink-100"><i class="fa-regular fa-images mr-1"></i><span id="migN"></span></button>
+                <button id="instBtn" onclick="doInstall()" title="앱 설치" class="w-8 h-8 rounded-lg text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100 text-xs"><i class="fa-solid fa-download"></i></button>
                 <button onclick="location.reload()" title="새로고침" class="w-8 h-8 rounded-lg text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100 text-xs"><i class="fa-solid fa-rotate-right"></i></button>
                 <button onclick="logout()" title="로그아웃" class="w-8 h-8 rounded-lg text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100 text-xs"><i class="fa-solid fa-right-from-bracket"></i></button>
             </div>
@@ -378,6 +380,21 @@
 
         window.onload = () => { showApp(); };
 
+        /* 앱 설치: 크롬이 허락하면 설치 창, 이미 깔려 있으면 안내, 아이폰은 '공유 → 홈 화면에 추가' (설치된 앱으로 열면 버튼 숨김) */
+        let DP = null; addEventListener('beforeinstallprompt', e => { e.preventDefault(); DP = e; });
+        if (matchMedia('(display-mode: standalone)').matches || navigator.standalone === true) document.getElementById('instBtn')?.remove();
+        async function doInstall() {
+            if (DP) { DP.prompt(); await DP.userChoice.catch(() => {}); DP = null; return; }
+            let ins = false; try { ins = !!(navigator.getInstalledRelatedApps && (await navigator.getInstalledRelatedApps()).length); } catch (e) {}
+            alert(ins ? '이미 이 기기에 설치돼 있어요. (설치 버튼이 필요하면 앱을 지우고 다시 열면 생겨요)' : /iPhone|iPad|iPod/.test(navigator.userAgent) ? '아이폰: 사파리 아래 공유 버튼 → 홈 화면에 추가' : '브라우저 메뉴(⋮) → 앱 설치(또는 홈 화면에 추가)를 눌러 주세요.');
+        }
+        /* STORE 고르기: 타이핑해서 찾고, 없으면 엔터로 새 가게를 만들어 바로 넣기 */
+        if (window.Pick) Pick.auto('#itemStoreSelect', { create: async (name) => {
+            const id = crypto.randomUUID();
+            stores.push({ id, name, color: '#0284c7', address: '', photo: '' });
+            sortStoresByRecentItem(); await syncData(); renderStores();
+            return id;
+        } });
         if ('serviceWorker' in navigator && location.protocol === 'https:') {
             navigator.serviceWorker.register('sw.js').catch(() => {});
         }
